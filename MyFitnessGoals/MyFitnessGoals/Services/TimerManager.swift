@@ -8,7 +8,6 @@
 import Foundation
 import Combine
 
-@MainActor
 class TimerManager: ObservableObject {
     var timer: Timer.TimerPublisher?
     @Published var state: TimerMode?

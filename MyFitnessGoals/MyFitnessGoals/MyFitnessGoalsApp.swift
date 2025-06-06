@@ -9,10 +9,6 @@ import SwiftUI
 
 @main
 struct MyFitnessGoalsApp: App {
-//    private let dataManager: CoreDataManager = .shared
-//    @StateObject private var themeManager = ThemeManager()
-//    @StateObject var router = NavigationRouter()
-    
     init() {
         UserDefaults.setDefaultValues()
     }
@@ -20,15 +16,6 @@ struct MyFitnessGoalsApp: App {
     var body: some Scene {
         WindowGroup {
             AppEntryView()
-//            NavigationStack {
-//                TabBarView(dataManager: dataManager)
-//                    .environmentObject(router)
-//                    .environmentObject(themeManager)
-//                    .onAppear {
-//                        let workoutSessionManager = WorkoutSessionManager.shared
-//                        workoutSessionManager.configure(router: router)
-//                    }
-//            }
         }
     }
 }

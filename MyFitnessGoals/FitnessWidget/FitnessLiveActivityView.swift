@@ -11,8 +11,10 @@ import WidgetKit
 
 struct FitnessLiveActivityView: View {
     let context: ActivityViewContext<FitnessAttributes>
+    @State private var localPausedState: Bool?
 
     var body: some View {
+        let isPaused = localPausedState ?? context.state.isPaused
         VStack() {
             HStack {
                 Image(systemName: "timer")
@@ -54,7 +56,7 @@ struct FitnessLiveActivityView: View {
                 .padding(.leading, 4)
                 Spacer()
                 HStack() {
-                    if context.state.isPaused {
+                    if isPaused {
                         Button(intent: LiveActivityPauseIntent()) {
                             Image(systemName: "pause.fill")
                                 .resizable()
@@ -66,6 +68,9 @@ struct FitnessLiveActivityView: View {
                                 .clipShape(Circle())
                         }
                         .buttonStyle(.plain)
+                        .onTapGesture {
+                            localPausedState = true
+                        }
                         
                     } else {
                         HStack(spacing: 4) {
@@ -92,6 +97,9 @@ struct FitnessLiveActivityView: View {
                                     .clipShape(Circle())
                             }
                             .buttonStyle(.plain)
+                            .onTapGesture {
+                                localPausedState = false
+                            }
                         }
                     }
                 }

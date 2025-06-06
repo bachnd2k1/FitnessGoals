@@ -14,19 +14,22 @@ struct AppEntryView: View {
     @StateObject var router = NavigationRouter()
     
     var body: some View {
-        if hasFinishedSetup {
-            NavigationStack {
-                TabBarView(dataManager: dataManager)
-                    .environmentObject(router)
-                    .environmentObject(themeManager)
-                    .onAppear {
-                        let workoutSessionManager = WorkoutSessionManager.shared
-                        workoutSessionManager.configure(router: router)
-                    }
+        ZStack {
+            if hasFinishedSetup {
+                NavigationStack {
+                    TabBarView(dataManager: dataManager)
+                        .environmentObject(router)
+                        .environmentObject(themeManager)
+                        .onAppear {
+                            let workoutSessionManager = WorkoutSessionManager.shared
+                            workoutSessionManager.configure(router: router)
+                        }
+                }
+            } else {
+                WelcomeFlow()
             }
-        } else {
-            WelcomeFlow()
         }
+        .animation(.easeInOut(duration: 0.4), value: hasFinishedSetup)
     }
 }
 

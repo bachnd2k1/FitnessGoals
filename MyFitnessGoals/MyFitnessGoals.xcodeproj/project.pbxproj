@@ -142,8 +142,6 @@
 		CA85B2662DC9F476001DF097 /* HeartRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA85B2652DC9F476001DF097 /* HeartRate.swift */; };
 		CA85B2672DC9F476001DF097 /* HeartRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA85B2652DC9F476001DF097 /* HeartRate.swift */; };
 		CA85B2EB2DD33CA4001DF097 /* WorkoutSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA85B2E92DD33CA4001DF097 /* WorkoutSessionManager.swift */; };
-		CA85B2ED2DD33CEA001DF097 /* Notification + Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA85B2EC2DD33CEA001DF097 /* Notification + Ext.swift */; };
-		CA85B2EE2DD33CEA001DF097 /* Notification + Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA85B2EC2DD33CEA001DF097 /* Notification + Ext.swift */; };
 		CAA464CE2DEE87FB00B3D672 /* WorkoutCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA464CD2DEE87FB00B3D672 /* WorkoutCommand.swift */; };
 		CAA464CF2DEE87FB00B3D672 /* WorkoutCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA464CD2DEE87FB00B3D672 /* WorkoutCommand.swift */; };
 		CADD80792DC46FC00072CDD4 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527FEEBC2D3CB20800C667CB /* LocationManager.swift */; };
@@ -315,7 +313,6 @@
 		CA6B16B22DE35B1400837884 /* NavigationRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationRouter.swift; sourceTree = "<group>"; };
 		CA85B2652DC9F476001DF097 /* HeartRate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRate.swift; sourceTree = "<group>"; };
 		CA85B2E92DD33CA4001DF097 /* WorkoutSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSessionManager.swift; sourceTree = "<group>"; };
-		CA85B2EC2DD33CEA001DF097 /* Notification + Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification + Ext.swift"; sourceTree = "<group>"; };
 		CAA464CD2DEE87FB00B3D672 /* WorkoutCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutCommand.swift; sourceTree = "<group>"; };
 		CAE145B52D7E80A20017FCE3 /* MapViewSwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewSwiftUI.swift; sourceTree = "<group>"; };
 		CAE145B72D7E81E70017FCE3 /* DataForPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataForPreview.swift; sourceTree = "<group>"; };
@@ -419,7 +416,6 @@
 				CAE146462D800CD20017FCE3 /* RoundedCorner.swift */,
 				CAE1464A2D8012880017FCE3 /* UIColor + Ext.swift */,
 				CA69C2EF2D93BDA80081E4FE /* UINavigationController + Ext.swift */,
-				CA85B2EC2DD33CEA001DF097 /* Notification + Ext.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -1024,7 +1020,6 @@
 				527B03142D5071530008FAE1 /* GeneralStatisticView.swift in Sources */,
 				CA2434792DF1426300E464AE /* WelcomeFlow.swift in Sources */,
 				CAE146472D800CD20017FCE3 /* RoundedCorner.swift in Sources */,
-				CA85B2EE2DD33CEA001DF097 /* Notification + Ext.swift in Sources */,
 				527FEEA82D3CA63900C667CB /* Distance.swift in Sources */,
 				527B031F2D50B83D0008FAE1 /* StatisticChartData.swift in Sources */,
 				529CC2AA2D3F9270004AA2B9 /* SpeedEntity+CoreDataClass.swift in Sources */,
@@ -1139,7 +1134,6 @@
 				CA70EEE02DC066E500D25116 /* Workout.swift in Sources */,
 				CA70EED62DC066DA00D25116 /* MeasureUnit.swift in Sources */,
 				CADD80792DC46FC00072CDD4 /* LocationManager.swift in Sources */,
-				CA85B2ED2DD33CEA001DF097 /* Notification + Ext.swift in Sources */,
 				CADD807A2DC46FC00072CDD4 /* ThemeManager.swift in Sources */,
 				CADD807B2DC46FC00072CDD4 /* MotionManager.swift in Sources */,
 				CADD807C2DC46FC00072CDD4 /* CalendarManager.swift in Sources */,

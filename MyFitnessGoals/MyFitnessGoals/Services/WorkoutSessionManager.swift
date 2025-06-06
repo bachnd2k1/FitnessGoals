@@ -5,95 +5,6 @@
 //  Created by Nghiem Dinh Bach on 13/5/25.
 //
 
-//import Foundation
-//import WatchConnectivity
-//import Combine
-//
-//class WatchSessionManager: NSObject, WCSessionDelegate, ObservableObject {
-//    static let shared = WatchSessionManager()
-//    private let session: WCSession
-//
-//    private override init() {
-//        self.session = WCSession.default
-//        super.init()
-//        activateSession()
-//    }
-//
-//    func activateSession() {
-//        if WCSession.isSupported() {
-////            let session = WCSession.default
-//            print("Is Paired: \(session.isPaired)")
-//            print("Is Reachable: \(session.isReachable)")
-//            print("Is Complication Enabled: \(session.isComplicationEnabled)")
-//            print("Is iOS App Installed: \(session.isWatchAppInstalled)")
-//            session.delegate = self
-//            session.activate()
-//        } else {
-//            print("Unpair with watch)")
-//        }
-//    }
-//
-//    // MARK: - WCSessionDelegate
-//
-//    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-//        if let error = error {
-//            print("iPhone session activation failed with error: \(error.localizedDescription)")
-//            return
-//        }
-//
-//
-//        print("iPhone session activated with state: \(activationState.rawValue)")
-//    }
-//
-//    func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
-//        DispatchQueue.main.async {
-//            if message["action"] as? String == "startWorkout" {
-//                print("Watch triggered the button!")
-//                NotificationCenter.default.post(name: .watchDidTriggerAction, object: nil)
-//            }
-//        }
-//    }
-//
-//    func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
-//        DispatchQueue.main.async {
-//            if message["action"] as? String == "startWorkout" {
-//                print("✅ Watch triggered the button!")
-//                NotificationCenter.default.post(name: .watchDidTriggerAction, object: nil)
-//            }
-//
-//            // Phản hồi lại để tránh lỗi deliveryFailed
-//            replyHandler(["status": "received"])
-//        }
-//    }
-//
-//    func sendMessageToWatch(_ message: [String: Any], replyHandler: (([String: Any]) -> Void)? = nil, errorHandler: ((Error) -> Void)? = nil) {
-//        guard WCSession.default.activationState == .activated else {
-//            print("Cannot send message: WatchConnectivity session has not been activated")
-//            errorHandler?(NSError(domain: "WatchSessionManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "WatchConnectivity session has not been activated"]))
-//            return
-//        }
-//
-//        guard WCSession.default.isWatchAppInstalled else {
-//            print("Cannot send message: Watch app is not installed")
-//            errorHandler?(NSError(domain: "WatchSessionManager", code: -2, userInfo: [NSLocalizedDescriptionKey: "Watch app is not installed"]))
-//            return
-//        }
-//
-//        WCSession.default.sendMessage(message, replyHandler: replyHandler, errorHandler: errorHandler)
-//    }
-//
-//    #if os(iOS)
-//    func sessionDidBecomeInactive(_ session: WCSession) {
-//        print("iPhone session became inactive")
-//    }
-//
-//    func sessionDidDeactivate(_ session: WCSession) {
-//        print("iPhone session deactivated - reactivating...")
-//        WCSession.default.activate()
-//    }
-//    #endif
-//}
-
 import Foundation
 import WatchConnectivity
 import Combine
@@ -138,28 +49,24 @@ class WorkoutSessionManager: NSObject, ObservableObject {
         ]
         
         sendMessage(message)
-        NotificationCenter.default.post(name: .workoutDidStart, object: nil, userInfo: ["type": type])
     }
     
     func pauseWorkout() {
         isWorkoutActive = false
         let message: [String: Any] = ["command": "pauseWorkout"]
         sendMessage(message)
-        NotificationCenter.default.post(name: .workoutDidPause, object: nil)
     }
     
     func resumeWorkout() {
         isWorkoutActive = true
         let message: [String: Any] = ["command": "resumeWorkout"]
         sendMessage(message)
-        NotificationCenter.default.post(name: .workoutDidResume, object: nil)
     }
     
     func endWorkout() {
         isWorkoutActive = false
         let message: [String: Any] = ["command": "endWorkout"]
         sendMessage(message)
-        NotificationCenter.default.post(name: .workoutDidEnd, object: nil)
     }
     
     func updateMetrics(distance: Double, speed: Double, heartRate: Double, steps: Int, calories: Int) {
@@ -179,17 +86,6 @@ class WorkoutSessionManager: NSObject, ObservableObject {
         ]
         
         sendMessage(message)
-        NotificationCenter.default.post(
-            name: .workoutDidUpdateMetrics,
-            object: nil,
-            userInfo: [
-                "distance": distance,
-                "speed": speed,
-                "heartRate": heartRate,
-                "steps": steps,
-                "calories": calories
-            ]
-        )
     }
     
     private func sendMessage(_ message: [String: Any]) {

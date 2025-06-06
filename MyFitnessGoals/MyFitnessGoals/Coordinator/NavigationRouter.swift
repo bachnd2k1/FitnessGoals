@@ -55,9 +55,5 @@ class NavigationRouter: ObservableObject {
     func setHeartRate(heartRate: Double) {
         self.heartRate = heartRate
     }
-    
-    func showTimerCounterDown(seconds: Int, actualStartTime: TimeInterval) {
-        
-    }
 }
 

@@ -10,7 +10,6 @@ import CoreMotion
 import UIKit
 import Combine
 
-@MainActor
 class MotionManager: ObservableObject {
     private let pedometer: CMPedometer
     var isPedometerAvailable: Bool {

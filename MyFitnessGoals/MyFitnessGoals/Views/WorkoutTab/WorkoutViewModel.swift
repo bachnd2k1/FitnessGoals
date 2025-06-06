@@ -42,10 +42,10 @@ final class WorkoutViewModel: ObservableObject {
     @Published var isPreparing = false
     @Published var countdown = 5
     @Published var showCountdownView = false
+    @Published var isStartingWorkout = false
     
     let delayCounterTimer = 3.0
 
-    var isStartingWorkout = false
 
     
     private var prepareTimer: Timer?
@@ -122,18 +122,23 @@ final class WorkoutViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isAuthorizeMotion in
                 guard let self else { return }
-                print("motionAccessIsDenied updated to 123123: \(motionAccessIsDenied)")
                 if let isAuthorizeMotion = isAuthorizeMotion {
-                    if isAuthorizeMotion && isStartingWorkout {
-                        startDate = startDate ?? Date()
-                        workoutStarted = true
-                        timer.start()
-                        locationManager.startLocationServices()
-                        locationManager.endLocation = nil
-                        startTimer()
-                    }
                     motionAccessIsDenied = !isAuthorizeMotion
                     print("motionAccessIsDenied updated to: \(motionAccessIsDenied)")
+                }
+            }
+            .store(in: &cancellables)
+        
+        $isStartingWorkout
+            .sink { [weak self] isStartingWorkout in
+                guard let self = self else { return }
+                if isStartingWorkout {
+                    startDate = startDate ?? Date()
+                    workoutStarted = true
+                    timer.start()
+                    locationManager.startLocationServices()
+                    locationManager.endLocation = nil
+                    startTimer()
                 }
             }
             .store(in: &cancellables)
