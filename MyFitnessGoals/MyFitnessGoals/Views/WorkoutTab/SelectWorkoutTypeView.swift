@@ -28,7 +28,9 @@ struct SelectWorkoutTypeView: View {
                         }
                         .fullScreenCover(item: $router.currentWorkoutType) { workoutType in
                             if viewModel.locationAccessIsDenied {
-                                RequestPermissonView(workoutType: workoutType, viewModel: viewModel)
+                                RequestPermissonView(workoutType: workoutType, viewModel: viewModel, permissionInfo: .location)
+                            } else if viewModel.motionAccessIsDenied {
+                                RequestPermissonView(workoutType: workoutType, viewModel: viewModel, permissionInfo: .motion)
                             } else {
                                 RecordWorkoutView(workoutType: workoutType,viewModel: viewModel)
                             }
@@ -37,7 +39,7 @@ struct SelectWorkoutTypeView: View {
                 }
             }
             .onAppear {
-                viewModel.requestPermissonHealthKit()
+//                viewModel.requestPermissonHealthKit()
             }
             .padding(.top, 10)
             .navigationBarTitle(L10n.titleSelectWork, displayMode: .inline)

@@ -37,19 +37,16 @@ final class WorkoutViewModel: ObservableObject {
     
     @Published var motionAccessIsDenied: Bool = false
     @Published var motionAccessThrowsError: Bool = false
+    @Published var motionAccessNotDetermine: Bool = false
     
     @Published var isPreparing = false
     @Published var countdown = 5
     @Published var showCountdownView = false
     
     let delayCounterTimer = 3.0
-    
-    
 
     var isStartingWorkout = false
-    //    var motionAccessIsDenied: Bool {
-    //        return motionManager.authorizationStatus == .denied
-    //    }
+
     
     private var prepareTimer: Timer?
     var timerIsPaused: Bool { state == .paused }
@@ -141,23 +138,6 @@ final class WorkoutViewModel: ObservableObject {
             }
             .store(in: &cancellables)
         
-        //        motionManager.$motionAccessIsDenied.assign(to: &$motionAccessIsDenied)
-        
-        //        motionManager.$authorizationStatus
-        //            .receive(on: DispatchQueue.main)
-        //            .sink { [weak self] status in
-        //                guard let self else { return }
-        //                switch status {
-        //                case .authorized:
-        //                    titleStartButton = L10n.startBtn
-        //                case .denied:
-        //                    titleStartButton = L10n.settingBtn
-        //                default:
-        //                }
-        //                self.objectWillChange.send()
-        //            }
-        //            .store(in: &cancellables)
-        
         locationManager.$locationAccessIsDenied
             .receive(on: DispatchQueue.main)
             .assign(to: &$locationAccessIsDenied)
@@ -185,6 +165,9 @@ final class WorkoutViewModel: ObservableObject {
             }
             .store(in: &cancellables)
         
+        motionManager.$motionAccessNotDetermine
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$motionAccessNotDetermine)
         
         #if os(iOS)
         manager.onPauseAction = {
@@ -207,16 +190,27 @@ final class WorkoutViewModel: ObservableObject {
         }
         #endif
         
-        
-        //        $locationAccessIsDenied
-        //            .sink { [weak self] isDenied in
-        //                guard let self else { return }
-        //                if isDenied {
-        ////                    self.endWorkout()
-        //                    self.pauseWorkout()
-        //                }
-        //            }
-        //            .store(in: &cancellables)
+    }
+    
+    // Trong View hoặc ViewModel
+    func permissionState(for permission: PermissionInfo) -> PermissionState {
+        switch permission {
+        case .location:
+            return PermissionState(
+                isDenied: locationAccessIsDenied,
+                isNotDetermined: locationAccessNotDetermine
+            )
+        case .motion:
+            return PermissionState(
+                isDenied: motionAccessIsDenied,
+                isNotDetermined: motionAccessNotDetermine
+            )
+        case .health:
+            return PermissionState(
+                isDenied: false,
+                isNotDetermined: false
+            )
+        }
     }
     
     func requestPermissonHealthKit() {
@@ -326,23 +320,14 @@ final class WorkoutViewModel: ObservableObject {
 
     
     func requestPermisson() {
-        //        motionManager.requestMotionPermission()
         #if os(iOS)
         locationManager.requestPermission()
+        motionManager.requestMotionPermission()
         #endif
     }
     
     func beginWorkout() {
         isStartingWorkout = true
-        #if os(iOS)
-        motionManager.requestMotionPermission()
-        #endif
-        //        startDate = Date()
-        //        workoutStarted = true
-        //        timer.start()
-        //        locationManager.startLocationServices()
-        //        locationManager.endLocation = nil
-        //        startTimer()
     }
     
     func pauseWorkout() {
@@ -405,7 +390,6 @@ final class WorkoutViewModel: ObservableObject {
             calories: calories)
         dataManager.add(workout)
         dataManager.addMetrics(to: workout)
-        //        dataManager.addMetrics(to: workout)
     }
     
     private func getMetrics() {

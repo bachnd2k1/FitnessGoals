@@ -42,10 +42,6 @@ final class LocationManager: NSObject, ObservableObject {
         locationManager.activityType = .fitness
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.allowsBackgroundLocationUpdates = true
-//        if locationManager.authorizationStatus == .notDetermined {
-//            locationAccessIsDenied = true
-//            locationManager.requestWhenInUseAuthorization()
-//        }
         updatePermissionStatus()
     }
     
@@ -72,7 +68,6 @@ final class LocationManager: NSObject, ObservableObject {
         default:
             break
         }
-//        locationManager.requestWhenInUseAuthorization()
     }
 
     #if os(iOS)
@@ -132,8 +127,6 @@ extension LocationManager: CLLocationManagerDelegate {
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         let status = manager.authorizationStatus
-        print("===>>> locationManagerDidChangeAuthorization triggered, status: \(status.rawValue)")
-
         DispatchQueue.main.async {
             switch status {
             case .authorizedAlways, .authorizedWhenInUse:

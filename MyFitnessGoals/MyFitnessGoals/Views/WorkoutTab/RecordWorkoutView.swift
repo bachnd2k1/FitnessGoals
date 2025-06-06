@@ -19,7 +19,7 @@ struct RecordWorkoutView: View {
     @State private var finishedWorkout = false
     @State private var isFullScreenMap = false
     @State private var isCancelWorkout = false
-//    @State private var shouldStartImmediately: Bool
+    //    @State private var shouldStartImmediately: Bool
     
     @State private var countdown = 5
     
@@ -83,8 +83,9 @@ struct RecordWorkoutView: View {
                                 timerIsNil: viewModel.timerIsNil,
                                 timerIsPaused: viewModel.timerIsPaused
                             ) {
-                                if !viewModel.locationAccessIsDenied && !viewModel.locationAccessThrowsError {
-                                    //                                viewModel.beginWorkout()
+                                if (!viewModel.locationAccessIsDenied && !viewModel.locationAccessThrowsError)
+                                    ||
+                                    (!viewModel.motionAccessIsDenied && viewModel.motionAccessThrowsError) {
                                     viewModel.startCountdown()
                                 } else {
                                     viewModel.requestPermisson()
@@ -171,12 +172,12 @@ struct RecordWorkoutView: View {
         .onChange(of: router.shouldEndWorkout) {
             if router.shouldEndWorkout {
                 timerIsStopped = true
-                viewModel.pauseWorkout()
-                router.shouldEndWorkout = false
-//                viewModel.endWorkout()
-//                router.currentWorkoutType = nil
-//                viewModel.addWorkout()
-//                router.shouldEndWorkout = false // Reset trigger
+                //                viewModel.endWorkout()
+                //                router.shouldEndWorkout = false
+                viewModel.endWorkout()
+                router.currentWorkoutType = nil
+                viewModel.addWorkout()
+                router.shouldEndWorkout = false // Reset trigger
             }
         }
         .onAppear {

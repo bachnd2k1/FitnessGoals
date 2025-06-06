@@ -14,7 +14,7 @@ struct WelcomeView: View {
     var body: some View {
         VStack {
             Spacer()
-            VStack(spacing: 16) {
+            VStack(spacing: 8) {
                 HStack {
                     Image(systemName: "chart.line.uptrend.xyaxis")
                         .resizable()
@@ -22,15 +22,16 @@ struct WelcomeView: View {
                         .foregroundColor(Color(hex: "#007AFF"))
                     
                     Text("Welcome to Goals!")
-                        .font(.title)
+                        .font(.system(size: 30, weight: .semibold, design: .rounded))
                         .bold()
                         .foregroundColor(.primary)
                 }
                 
                 Text("Set Goals. Track Runs & Walks.\nCount Steps.")
                     .multilineTextAlignment(.center)
-                    .font(.body)
+                    .font(.system(size: 18, weight: .medium, design: .rounded))
                     .foregroundColor(.primary)
+                    .padding(.top, 8)
             }
             .padding()
             
@@ -45,6 +46,7 @@ struct WelcomeView: View {
                     .padding()
                     .background(Color(hex: "#007AFF"))
                     .cornerRadius(20)
+                    .font(.system(size: 18, weight: .medium, design: .rounded))
             }
             .padding(.horizontal)
             .padding(.bottom, 8)

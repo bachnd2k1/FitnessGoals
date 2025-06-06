@@ -10,21 +10,24 @@ import SwiftUI
 struct RequestPermissonView: View {
     @State var isDenied: Bool = false
     @ObservedObject var viewModel: WorkoutViewModel
+   
     @EnvironmentObject var router: NavigationRouter
 //    @Binding var workoutType: WorkoutType?
     @State private var offset: CGFloat = 0
-    let workoutType: WorkoutType
+    var workoutType: WorkoutType
+    var permissionInfo: PermissionInfo
     
     //    init(workoutType: Binding<WorkoutType?>, viewModel: WorkoutViewModel) {
     //        self._workoutType = workoutType
     //        _viewModel = .init(wrappedValue: WorkoutViewModel(dataManager: .shared, type: workoutType.wrappedValue, healthKitManager: .shared))
     //    }
     
-    init(workoutType: WorkoutType, viewModel: WorkoutViewModel) {
+    init(workoutType: WorkoutType, viewModel: WorkoutViewModel, permissionInfo: PermissionInfo) {
         //        self._workoutType = workoutType
         self.workoutType = workoutType
         self.viewModel = viewModel
-        self.viewModel.workoutType = workoutType
+        self.workoutType = workoutType
+        self.permissionInfo = permissionInfo
 //        self.viewModel = WorkoutViewModel(
 //            dataManager: .shared,
 //            type: workoutType,
@@ -57,12 +60,12 @@ struct RequestPermissonView: View {
                     }
                 }
                 
-                Text(permissionTitle)
+                Text(permissionInfo.permissionTitle(state: viewModel.permissionState(for: permissionInfo)))
                     .font(.title3)
                     .fontWeight(.semibold)
                     .padding(.top, 8)
                 
-                Text(permissionMessage)
+                Text(permissionInfo.permissionMessage(state: viewModel.permissionState(for: permissionInfo)))
                     .font(.system(size: 15))
                     .foregroundStyle(.gray)
                     .multilineTextAlignment(.center)
@@ -72,7 +75,7 @@ struct RequestPermissonView: View {
                 Button(action: {
                     viewModel.requestPermisson()
                 }) {
-                    Text(buttonTitle)
+                    Text(permissionInfo.buttonTitle(state: viewModel.permissionState(for: permissionInfo)))
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
@@ -88,27 +91,10 @@ struct RequestPermissonView: View {
             }
         }
     }
-    
-    private var permissionTitle: String {
-        viewModel.locationAccessIsDenied && viewModel.locationAccessNotDetermine ? L10n.denyLocationTitle : L10n.requestLocationTitle
-    }
-    
-    private var permissionMessage: String {
-        viewModel.locationAccessIsDenied && viewModel.locationAccessNotDetermine  ?
-        L10n.denyLocationMessage :
-        L10n.requestLocationMessage
-    }
-    
-    private var buttonTitle: String {
-        viewModel.locationAccessIsDenied && viewModel.locationAccessNotDetermine  ?
-        L10n.denyLocationAction :
-        L10n.requestLocationAction
-    }
 }
 
 struct RequestPermissonView_Previews: PreviewProvider {
     static var previews: some View {
-//        RequestPermissonView(workoutType: .constant(.running), viewModel: .init(dataManager: .preview, type: nil, healthKitManager: .shared))
-        RequestPermissonView(workoutType: .running, viewModel: .init(dataManager: .preview, type: nil, healthKitManager: .shared))
+        RequestPermissonView(workoutType: .running, viewModel: .init(dataManager: .preview, type: nil, healthKitManager: .shared), permissionInfo: .location)
     }
 }

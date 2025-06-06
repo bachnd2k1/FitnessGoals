@@ -19,9 +19,11 @@ class MotionManager: ObservableObject {
     @Published var steps: Int?
     @Published var error: String = ""
     @Published var isAuthorizeMotion: Bool?
+    @Published var motionAccessNotDetermine: Bool = false
     
     let permissionResult = PassthroughSubject<Bool, Never>()
     
+
     init() {
         self.pedometer = CMPedometer()
         checkAuthorizationStatusOnLaunch()
@@ -85,10 +87,13 @@ class MotionManager: ObservableObject {
         switch status {
         case .notDetermined:
             isAuthorizeMotion = nil
+            motionAccessNotDetermine = true
         case .denied:
             isAuthorizeMotion = false
+            motionAccessNotDetermine = false
         case .authorized:
             isAuthorizeMotion = true
+            motionAccessNotDetermine = false
         default:
             break
         }

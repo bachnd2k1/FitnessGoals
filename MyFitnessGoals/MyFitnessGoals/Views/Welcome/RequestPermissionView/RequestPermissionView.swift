@@ -9,28 +9,29 @@ import SwiftUI
 
 struct RequestPermissionView: View {
     @ObservedObject var viewModel: WelcomeFlowViewModel
-    var permission: PermissionOnBoarding
+    var permission: PermissionInfo
     var onNext: () -> Void
 
     var body: some View {
         VStack {
             Spacer()
             
-            VStack(spacing: 16) {
+            VStack(spacing: 8) {
                 HStack {
                     Image(permission.icon)
                         .resizable()
                         .frame(width: 60, height: 60)
 
                     Text(permission.name)
-                        .font(.system(size: 24, weight: .semibold))
+                        .font(.system(size: 30, weight: .semibold, design: .rounded))
                         .foregroundColor(.primary)
                 }
 
                 Text(permission.description)
                     .multilineTextAlignment(.center)
-                    .font(.system(size: 16))
+                    .font(.system(size: 16, weight: .medium, design: .rounded))
                     .foregroundColor(.primary)
+                    .padding(.top, 8)
             }
             .padding()
 
@@ -52,6 +53,7 @@ struct RequestPermissionView: View {
                     .padding()
                     .background(Color(hex: "#007AFF"))
                     .cornerRadius(20)
+                    .font(.system(size: 18, weight: .medium, design: .rounded))
             }
             .padding(.horizontal)
             .padding(.bottom, 8)

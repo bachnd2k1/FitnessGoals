@@ -79,7 +79,7 @@
 		CA2434602DF1304900E464AE /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA24345F2DF1304900E464AE /* WelcomeView.swift */; };
 		CA24346D2DF136C000E464AE /* FillInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA24346C2DF136C000E464AE /* FillInfoView.swift */; };
 		CA2434702DF1376F00E464AE /* RequestPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA24346F2DF1376F00E464AE /* RequestPermissionView.swift */; };
-		CA2434722DF1381200E464AE /* PermissionOnBoarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434712DF1381200E464AE /* PermissionOnBoarding.swift */; };
+		CA2434722DF1381200E464AE /* PermissionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434712DF1381200E464AE /* PermissionInfo.swift */; };
 		CA2434752DF13AAF00E464AE /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434742DF13AAF00E464AE /* AppInfo.swift */; };
 		CA2434762DF13AAF00E464AE /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434742DF13AAF00E464AE /* AppInfo.swift */; };
 		CA2434792DF1426300E464AE /* WelcomeFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434782DF1426300E464AE /* WelcomeFlow.swift */; };
@@ -88,6 +88,8 @@
 		CA2434822DF1704C00E464AE /* PickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434812DF1704C00E464AE /* PickerSheet.swift */; };
 		CA2434842DF1708F00E464AE /* GenderPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434832DF1708F00E464AE /* GenderPickerSheet.swift */; };
 		CA2434862DF170C400E464AE /* WeightPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434852DF170C400E464AE /* WeightPickerSheet.swift */; };
+		CA2434C72DF2979800E464AE /* PermissionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434C62DF2979800E464AE /* PermissionState.swift */; };
+		CA2434C82DF2979800E464AE /* PermissionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434C62DF2979800E464AE /* PermissionState.swift */; };
 		CA5FEB212DE6E71D0051765C /* WatchTimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5FEB202DE6E71D0051765C /* WatchTimerManager.swift */; };
 		CA5FEB222DE6E71D0051765C /* WatchTimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5FEB202DE6E71D0051765C /* WatchTimerManager.swift */; };
 		CA651DB42D8181F500B817E6 /* EmptyResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA651DB32D8181F500B817E6 /* EmptyResultView.swift */; };
@@ -136,7 +138,6 @@
 		CA85B2542DC9E087001DF097 /* SpeedEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529CC2A12D3F9270004AA2B9 /* SpeedEntity+CoreDataProperties.swift */; };
 		CA85B2552DC9E087001DF097 /* StepEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529CC29C2D3F9270004AA2B9 /* StepEntity+CoreDataClass.swift */; };
 		CA85B2562DC9E08E001DF097 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527FEFF02D3D278D00C667CB /* CoreDataManager.swift */; };
-		CA85B2572DC9E18D001DF097 /* WorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AA50852D478B4E00AB4054 /* WorkoutViewModel.swift */; };
 		CA85B2582DC9E1AD001DF097 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA651E202D890B0300B817E6 /* HealthKitManager.swift */; };
 		CA85B2662DC9F476001DF097 /* HeartRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA85B2652DC9F476001DF097 /* HeartRate.swift */; };
 		CA85B2672DC9F476001DF097 /* HeartRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA85B2652DC9F476001DF097 /* HeartRate.swift */; };
@@ -288,7 +289,7 @@
 		CA24345F2DF1304900E464AE /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		CA24346C2DF136C000E464AE /* FillInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FillInfoView.swift; sourceTree = "<group>"; };
 		CA24346F2DF1376F00E464AE /* RequestPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestPermissionView.swift; sourceTree = "<group>"; };
-		CA2434712DF1381200E464AE /* PermissionOnBoarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionOnBoarding.swift; sourceTree = "<group>"; };
+		CA2434712DF1381200E464AE /* PermissionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionInfo.swift; sourceTree = "<group>"; };
 		CA2434742DF13AAF00E464AE /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
 		CA2434782DF1426300E464AE /* WelcomeFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeFlow.swift; sourceTree = "<group>"; };
 		CA24347B2DF142F800E464AE /* AppEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEntryView.swift; sourceTree = "<group>"; };
@@ -296,6 +297,7 @@
 		CA2434812DF1704C00E464AE /* PickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerSheet.swift; sourceTree = "<group>"; };
 		CA2434832DF1708F00E464AE /* GenderPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenderPickerSheet.swift; sourceTree = "<group>"; };
 		CA2434852DF170C400E464AE /* WeightPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightPickerSheet.swift; sourceTree = "<group>"; };
+		CA2434C62DF2979800E464AE /* PermissionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionState.swift; sourceTree = "<group>"; };
 		CA5FEB202DE6E71D0051765C /* WatchTimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchTimerManager.swift; sourceTree = "<group>"; };
 		CA651DB32D8181F500B817E6 /* EmptyResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyResultView.swift; sourceTree = "<group>"; };
 		CA651DB52D82ABA000B817E6 /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
@@ -552,8 +554,9 @@
 				CA69C2132D8D397D0081E4FE /* InfoType.swift */,
 				CA69C2D92D91382E0081E4FE /* MotionAuthorizationStatus.swift */,
 				CAA464CD2DEE87FB00B3D672 /* WorkoutCommand.swift */,
-				CA2434712DF1381200E464AE /* PermissionOnBoarding.swift */,
+				CA2434712DF1381200E464AE /* PermissionInfo.swift */,
 				CA2434742DF13AAF00E464AE /* AppInfo.swift */,
+				CA2434C62DF2979800E464AE /* PermissionState.swift */,
 			);
 			path = Enum;
 			sourceTree = "<group>";
@@ -1059,6 +1062,7 @@
 				CA24346D2DF136C000E464AE /* FillInfoView.swift in Sources */,
 				527FEEB12D3CA73700C667CB /* Constant.swift in Sources */,
 				527B031D2D50B6930008FAE1 /* PeriodChartView.swift in Sources */,
+				CA2434C72DF2979800E464AE /* PermissionState.swift in Sources */,
 				CAE146492D800E810017FCE3 /* FilterView.swift in Sources */,
 				527B03272D51B8590008FAE1 /* GoalsView.swift in Sources */,
 				52AA506F2D43395E00AB4054 /* HistoryViewModel.swift in Sources */,
@@ -1085,7 +1089,7 @@
 				527FEEC12D3CED3C00C667CB /* TimerManager.swift in Sources */,
 				52AA50912D478D7700AB4054 /* TimerView.swift in Sources */,
 				CA2434822DF1704C00E464AE /* PickerSheet.swift in Sources */,
-				CA2434722DF1381200E464AE /* PermissionOnBoarding.swift in Sources */,
+				CA2434722DF1381200E464AE /* PermissionInfo.swift in Sources */,
 				529CC2A92D3F9270004AA2B9 /* WorkoutEntity+CoreDataProperties.swift in Sources */,
 				527B03362D51CDCB0008FAE1 /* Color + Ext.swift in Sources */,
 			);
@@ -1105,7 +1109,6 @@
 				CA70EED12DC066DA00D25116 /* WorkoutType.swift in Sources */,
 				CA70EED22DC066DA00D25116 /* FIlterType.swift in Sources */,
 				CA85B2672DC9F476001DF097 /* HeartRate.swift in Sources */,
-				CA85B2572DC9E18D001DF097 /* WorkoutViewModel.swift in Sources */,
 				CA85B24C2DC9E087001DF097 /* WorkoutEntity+CoreDataClass.swift in Sources */,
 				CA85B24D2DC9E087001DF097 /* StepEntity+CoreDataProperties.swift in Sources */,
 				CA85B24E2DC9E087001DF097 /* WorkoutEntity+CoreDataProperties.swift in Sources */,
@@ -1140,6 +1143,7 @@
 				CADD807A2DC46FC00072CDD4 /* ThemeManager.swift in Sources */,
 				CADD807B2DC46FC00072CDD4 /* MotionManager.swift in Sources */,
 				CADD807C2DC46FC00072CDD4 /* CalendarManager.swift in Sources */,
+				CA2434C82DF2979800E464AE /* PermissionState.swift in Sources */,
 				CADD807D2DC46FC00072CDD4 /* TimerManager.swift in Sources */,
 				CA70EED02DC065DC00D25116 /* Fitness.xcdatamodeld in Sources */,
 				CA70EEBF2DC065C000D25116 /* RoundedCorner.swift in Sources */,
