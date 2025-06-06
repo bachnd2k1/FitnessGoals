@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict/>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+		<string>location</string>
+	</array>
+	<key>NSHealthShareUsageDescription</key>
+	<string>MyFitnessGoals need to access to your health data to provide better insights.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>MyFitnessGoals need permission to update your health data.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>This app uses motion data to enhance the user experience and provide activity tracking.</string>
+</dict>
+</plist>

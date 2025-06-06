@@ -1,0 +1,42 @@
+/* 
+  Localizable.strings
+  MyFitnessGoals
+
+  Created by Nghiem Dinh Bach on 17/3/25.
+  
+*/
+
+"title_select_work" = "Begin Workout";
+"title_my_goal" = "My goal";
+
+
+"no_permisson_health_kit" = "No data is available, please check permissions in the Health App - Profile (top right corner) - Privacy - Apps - MyFitNessGoals.";
+"open_health_app" = "Open Health App";
+"start_btn" = "Start";
+"setting_btn" = "Open Setting";
+"cancel_session_title_dialog" = "Do you want to cancel this workout session ?";
+"end_session_title_dialog" = "This will stop recording your current workout and save it to your history.";
+
+"warning" = "Warning !";
+"location_error" = "Location Access Error";
+"steps" = "Steps";
+"duration" = "Duration";
+"motion_disable_title" = "Motion Services Disabled";
+"motion_disable_description" = "Please go to your Settings and enable Motion Services to be able to start recording a workout.";
+"yes" = "Yes";
+"no" = "No";
+"ok" = "ok";
+
+"deny_location_message" = "You have denied location access. Please go to Settings to enable it again!";
+"request_location_message" = "To continue, please go to Settings and allow the app to access your location!";
+
+"deny_location_title" = "Location access denied";
+"request_location_title" = "Allow location access";
+
+"deny_location_action" = "Open Settings";
+"request_location_action" = "Allow permisson";
+
+// Permisson onboarding
+"description_heath_permisson" = "Backup your workout data in Apple Health and enable all step counter and heart rate features.";
+"description_location_permisson" = "%@ needs access to your location to record your workouts.";
+"description_motion_permisson" = "%@ needs access to your motion service to record your workouts.";

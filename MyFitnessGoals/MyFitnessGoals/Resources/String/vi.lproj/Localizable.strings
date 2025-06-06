@@ -1,0 +1,42 @@
+/* 
+  Localizable.strings
+  MyFitnessGoals
+
+  Created by Nghiem Dinh Bach on 17/3/25.
+  
+*/
+
+"title_select_work" = "Bắt đầu luyện tập";
+"title_my_goal" = "Mục tiêu của tôi";
+
+
+"no_permisson_health_kit" = "Không có dữ liệu nào khả dụng, vui lòng kiểm tra quyền trong Ứng dụng sức khỏe - Hồ sơ (góc trên bên phải) - Quyền riêng tư - Ứng dụng - MyFitNessGoals.";
+"open_health_app" = "Mở ứng dụng Health";
+"start_btn" = "Bắt đầu";
+"setting_btn" = "Mở cài đặt";
+"cancel_session_title_dialog" = "Bạn có muốn huỷ buổi luyện tập ?";
+"end_session_title_dialog" = "Thao tác này sẽ dừng ghi lại quá trình tập luyện hiện tại của bạn và lưu vào lịch sử.";
+
+"warning" = "Cảnh báo !";
+"location_error" = "Quyền truy nhập vị trí bị lỗi";
+"steps" = "Bước";
+"duration" = "Thời gian";
+"motion_disable_title" = "Dịch vụ chuyển động bị vô hiệu";
+"motion_disable_description" = "Vui lòng vào Cài đặt và bật Dịch vụ chuyển động để có thể bắt đầu ghi lại quá trình tập luyện..";
+"yes" = "Có";
+"no" = "Không";
+"ok" = "ok";
+"deny_location_message" = "Bạn đã từ chối quyền truy cập vị trí. Hãy vào Cài đặt để bật lại nhé !";
+"request_location_message" = "Để tiếp tục, bạn hãy vào phần Cài đặt và cho phép ứng dụng truy cập vào vị trí nhé !";
+
+"deny_location_title" = "Quyền vị trí bị từ chối.";
+"request_location_title" = "Cho phép truy cập vị trí.";
+
+
+"deny_location_action" = "Mở Cài Đặt";
+"request_location_action" = "Cấp quyền truy nhập";
+
+// Permisson onboarding
+"description_heath_permisson" = "Sao lưu dữ liệu tập luyện của bạn trong Apple Health và bật tất cả các tính năng đếm bước chân và nhịp tim.";
+"description_location_permisson" = "%@ cần truy cập vào vị trí của bạn để ghi lại quá trình tập luyện của bạn.";
+"description_motion_permisson" = "%@ cần truy cập vào dịch vụ chuyển động của bạn để ghi lại quá trình tập luyện của bạn.";

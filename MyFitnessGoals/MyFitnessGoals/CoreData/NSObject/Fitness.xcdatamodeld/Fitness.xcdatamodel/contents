@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21513" systemVersion="21H1222" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CalorieEntity" representedClassName="CalorieEntity" syncable="YES">
+        <attribute name="calorie" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="type" attributeType="Integer 16" defaultValueString="3" usesScalarValueType="YES"/>
+        <attribute name="workoutType" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="workout" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="WorkoutEntity" inverseName="calories" inverseEntity="WorkoutEntity"/>
+    </entity>
+    <entity name="DistanceEntity" representedClassName="DistanceEntity" syncable="YES">
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="distance" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="type" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="workoutType" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="workout" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="WorkoutEntity" inverseName="distance" inverseEntity="WorkoutEntity"/>
+    </entity>
+    <entity name="SpeedEntity" representedClassName="SpeedEntity" syncable="YES">
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="speed" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="type" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
+        <attribute name="workoutType" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="workout" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="WorkoutEntity" inverseName="speed" inverseEntity="WorkoutEntity"/>
+    </entity>
+    <entity name="StepEntity" representedClassName="StepEntity" syncable="YES">
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="step" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="type" attributeType="Integer 16" defaultValueString="2" usesScalarValueType="YES"/>
+        <attribute name="workoutType" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="workout" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="WorkoutEntity" inverseName="steps" inverseEntity="WorkoutEntity"/>
+    </entity>
+    <entity name="WorkoutEntity" representedClassName="WorkoutEntity" syncable="YES">
+        <attribute name="altitudes" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="[Double]"/>
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="distances" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="[Double]"/>
+        <attribute name="duration" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="routeLatitudes" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="[Double]"/>
+        <attribute name="routeLongitudes" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="[Double]"/>
+        <attribute name="speeds" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="[Double]"/>
+        <attribute name="type" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
+        <attribute name="uuid" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="calories" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="CalorieEntity" inverseName="workout" inverseEntity="CalorieEntity"/>
+        <relationship name="distance" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="DistanceEntity" inverseName="workout" inverseEntity="DistanceEntity"/>
+        <relationship name="speed" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="SpeedEntity" inverseName="workout" inverseEntity="SpeedEntity"/>
+        <relationship name="steps" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="StepEntity" inverseName="workout" inverseEntity="StepEntity"/>
+    </entity>
+</model>
