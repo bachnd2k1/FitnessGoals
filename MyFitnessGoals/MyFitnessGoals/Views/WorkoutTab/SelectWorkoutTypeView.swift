@@ -10,12 +10,12 @@ import SwiftUI
 struct SelectWorkoutTypeView: View {
     @State private var selectedWorkoutType: WorkoutType?
     @StateObject var viewModel: WorkoutViewModel
-    @EnvironmentObject var router: NavigationRouter
+    @EnvironmentObject var router: MobileNavigationRouter
     let dataManager: CoreDataManager
     
     init(dataManager: CoreDataManager, healthKitManager: HealthKitManager) {
         self.dataManager = dataManager
-        self._viewModel = .init(wrappedValue: WorkoutViewModel(dataManager: dataManager, type: nil, healthKitManager: .shared))
+        self._viewModel = .init(wrappedValue: WorkoutViewModel(dataManager: dataManager, type: nil, healthKitManager: .shared, workoutSessionManager: WorkoutSessionManager.shared))
     }
     
     var body: some View {

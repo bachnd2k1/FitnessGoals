@@ -9,7 +9,10 @@ import Foundation
 import Combine
 import SwiftUI
 
-class NavigationRouter: ObservableObject {
+class MobileNavigationRouter: ObservableObject {
+    static let shared = MobileNavigationRouter()
+    
+    @Published var shouldStartWorkout = false
     @Published var currentWorkoutType: WorkoutType? = nil
     @Published var shouldStartImmediately: Bool = false
     @Published var shouldPauseWorkout: Bool = false
@@ -54,6 +57,10 @@ class NavigationRouter: ObservableObject {
     
     func setHeartRate(heartRate: Double) {
         self.heartRate = heartRate
+    }
+    
+    func startWorkoutFlow() {
+        shouldStartWorkout = true
     }
 }
 

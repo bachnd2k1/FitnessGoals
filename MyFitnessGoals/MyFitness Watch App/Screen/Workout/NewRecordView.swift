@@ -1,14 +1,16 @@
 //
-//  RecordWorkView.swift
+//  NewRecordView.swift
 //  MyFitness Watch App
 //
-//  Created by Nghiem Dinh Bach on 2/5/25.
+//  Created by Nghiem Dinh Bach on 9/6/25.
 //
 
+import Foundation
 import SwiftUI
 
-struct RecordWorkView: View {
-    @ObservedObject var viewModel: RecordWorkViewModel
+struct NewRecordView: View {
+    @ObservedObject var viewModel: WatchWorkoutViewModel
+    
     
     var body: some View {
         VStack {
@@ -102,11 +104,11 @@ struct RecordWorkView: View {
     private func speedFormatter(for value: Double?) -> String? {
         // conversion meters/second -> kilometers/hour
         guard let valueInMetersPerSecond = value else { return nil }
-        return formatter.string(for: (valueInMetersPerSecond * 3.6))
+        return formatter.string(for: (valueInMetersPerSecond))
     }
 }
 
 #Preview {
-    let viewModel = RecordWorkViewModel(dataManager: .preview, type: .cycling, healthKitManager: .shared, router: WatchNavigationRouter())
-    RecordWorkView(viewModel: viewModel)
+    let viewModel = WatchWorkoutViewModel(router: WatchNavigationRouter(), type: .cycling)
+    NewRecordView(viewModel: viewModel)
 }

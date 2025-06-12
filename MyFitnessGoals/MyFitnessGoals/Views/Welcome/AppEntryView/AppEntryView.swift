@@ -11,7 +11,7 @@ struct AppEntryView: View {
     @AppStorage("hasFinishedSetup") var hasFinishedSetup: Bool = false
     private let dataManager: CoreDataManager = .shared
     @StateObject private var themeManager = ThemeManager()
-    @StateObject var router = NavigationRouter()
+    @StateObject var router = MobileNavigationRouter()
     
     var body: some View {
         ZStack {

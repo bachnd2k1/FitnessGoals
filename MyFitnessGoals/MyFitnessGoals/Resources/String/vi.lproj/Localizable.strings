@@ -40,3 +40,6 @@
 "description_heath_permisson" = "Sao lưu dữ liệu tập luyện của bạn trong Apple Health và bật tất cả các tính năng đếm bước chân và nhịp tim.";
 "description_location_permisson" = "%@ cần truy cập vào vị trí của bạn để ghi lại quá trình tập luyện của bạn.";
 "description_motion_permisson" = "%@ cần truy cập vào dịch vụ chuyển động của bạn để ghi lại quá trình tập luyện của bạn.";
+
+"guide_location_permisson" = "Để ghi lại quá trình tập luyện của bạn, vui lòng cấp quyền truy cập vị trí. iPhone: Cài đặt/ Quyền riêng tư/ Dịch vụ vị trí/ %@ -> Trong khi sử dụng ứng dụng";
+"guide_motion_permisson" = "Để ghi lại quá trình tập luyện của bạn, vui lòng cấp quyền truy cập chuyển động. iPhone: Cài đặt/ Quyền riêng tư/ Chuyển động & Thể dục/ %@ -> Trong khi sử dụng ứng dụng.";

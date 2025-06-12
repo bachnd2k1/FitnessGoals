@@ -85,6 +85,7 @@ import SwiftUI
 struct HomeView: View {
     
     @ObservedObject var viewModel: HomeViewModel
+    @StateObject var router = WatchNavigationRouter()
     
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
@@ -94,12 +95,21 @@ struct HomeView: View {
         NavigationView {
             VStack {
                 NavigationLink {
-                    // Đây là closure destination, chỉ tạo khi nhấn
                     PageView(viewModel: RecordWorkViewModel(
                         dataManager: .shared,
                         type: viewModel.workoutType,
-                        healthKitManager: .shared)
-                    )
+                        healthKitManager: .shared,
+                        router: router
+                    ))
+//                    )
+//                    if router.isLocationPermission, router.isMotionPermission {
+//                        PageView(viewModel: WatchWorkoutViewModel(router: router, type: viewModel.workoutType)
+//                        )
+//                    } else if !router.isLocationPermission {
+//                        PermissionGuideView(permissionInfo: .location)
+//                    } else if !router.isMotionPermission {
+//                        PermissionGuideView(permissionInfo: .motion)
+//                    }
                 } label: {
                     VStack(alignment: .center, spacing: 16) {
                         Text(viewModel.workoutType.name)
@@ -160,6 +170,10 @@ struct HomeView: View {
                 
             }
             .padding()
+        }
+        .onAppear {
+            let workoutSessionManager = WatchSessionManager.shared
+            workoutSessionManager.configure(router: router)
         }
     }
 }

@@ -80,5 +80,5 @@ struct TutorialView: View {
 }
 
 #Preview {
-    TutorialView(viewModel: RecordWorkViewModel(dataManager: .preview, type: .cycling, healthKitManager: .shared))
+    TutorialView(viewModel: RecordWorkViewModel(dataManager: .preview, type: .cycling, healthKitManager: .shared, router: WatchNavigationRouter()))
 }

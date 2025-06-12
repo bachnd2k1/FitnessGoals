@@ -18,7 +18,7 @@ class RecordWorkViewModel: ObservableObject {
     private let healthKitManager: HealthKitManager
     private let heartRateMonitor = HeartRateMonitor()
     private let watchsessionManager: WatchSessionManager = WatchSessionManager.shared
-    
+    private let predictor = WorkoutPredictor()
     
     @Published var state: TimerMode?
     @Published var elapsedTime: TimeInterval = 0
@@ -52,7 +52,7 @@ class RecordWorkViewModel: ObservableObject {
     
     var totalCount: Int = 3
     var startAt: Date?
-    
+    var isPaired: Bool = false
     
     var timerIsPaused: Bool { state == .paused }
     
@@ -63,11 +63,28 @@ class RecordWorkViewModel: ObservableObject {
     private var isPaused = false
     private var prepareTimer: Timer?
     
-    init(dataManager: CoreDataManager, type: WorkoutType?, healthKitManager: HealthKitManager) {
+    init(dataManager: CoreDataManager, type: WorkoutType?, healthKitManager: HealthKitManager, router: WatchNavigationRouter) {
         self.dataManager = dataManager
         self.workoutType = type
         self.healthKitManager = healthKitManager
         
+        // isPairedPublisher emit true -> measurementPublisher se luon nhan dc gia tri moi
+        router.isPairedPublisher
+            .receive(on: DispatchQueue.main)
+            .handleEvents(receiveOutput: { [weak self] value in
+                guard let self else { return }
+                self.isPaired = value
+            })
+            .filter { $0 }
+            .flatMap { _ in
+                router.measurementPublisher
+            }
+            .sink { [weak self] measurement in
+                guard let self  else { return }
+                // Lưu lại hoặc xử lý measurement
+                self.receiveNewMeasurement(measurement)
+            }
+            .store(in: &cancellables)
         setupBindings()
     }
     
@@ -90,8 +107,6 @@ class RecordWorkViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .assign(to: \.elapsedTime, on: self)
             .store(in: &cancellables)
-        
-        
         
         locationManager.distancePublisher
             .sink { [weak self] distanceValue in
@@ -123,7 +138,12 @@ class RecordWorkViewModel: ObservableObject {
             .sink { [weak self] elapsedTime in
                 if let self, let startDate, elapsedTime > 0 {
                     if let workoutType, workoutType != .cycling {
+                        let accel = self.motionManager.currentAccelerationMagnitude()
                         self.motionManager.getSteps(startDate: startDate, endDate: startDate + elapsedTime)
+                        if isPaired {
+                            self.predictor.predict(accel: accel)
+                            self.updateUIFromPredictor()
+                        }
                     }
                 }
             }
@@ -142,58 +162,32 @@ class RecordWorkViewModel: ObservableObject {
             }
             .store(in: &cancellables)
         
-        //        motionManager.$isAuthorizeMotion
-        //            .receive(on: DispatchQueue.main)
-        //            .sink { [weak self] isAuthorizeMotion in
-        //                guard let self else {
-        //                    return
-        //                }
-        ////                self.isAllowMotion = isAllowMotion
-        //                if let isAuthorizeMotion = isAuthorizeMotion {
-        //                    if isAuthorizeMotion && isStartingWorkout {
-        //                        self.locationManager.endLocation = nil
-        //                        self.startDate = Date()
-        //                        self.workoutStarted = true
-        //                        sessionTimer.start()
-        //                        self.locationManager.startLocationServices()
-        //                        self.heartRateMonitor.startWorkoutSession()
-        //                    }
-        //                    self.motionAccessIsDenied = !isAuthorizeMotion
-        //                }
-        //            }
-        //            .store(in: &cancellables)
-        
         // check to start timer session
         $isStartingWorkout
             .sink { [weak self] isStartingWorkout in
                 guard let self = self else { return }
                 if isStartingWorkout {
-                    self.locationManager.endLocation = nil
                     self.startDate = Date()
                     self.workoutStarted = true
                     sessionTimer.start()
+                    if !isPaired {
+                        self.locationManager.endLocation = nil
+                    }
                 }
             }
             .store(in: &cancellables)
         
-        healthKitManager.$isAuthorized
+        heartRateMonitor.$currentHeartRate
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] isAuthorizeHealthKit in
+            .sink { [weak self] currentHeartRate in
                 guard let self else { return }
+                self.currentHeartRate = HeartRate(id: self.workoutId,
+                                                  workoutType: self.workoutType,
+                                                  date: self.startDate, value: currentHeartRate)
             }
             .store(in: &cancellables)
         
-        //        heartRateMonitor.$currentHeartRate
-        //            .receive(on: DispatchQueue.main)
-        //            .sink { [weak self] currentHeartRate in
-        //                guard let self else { return }
-        //                self.currentHeartRate = HeartRate(id: self.workoutId,
-        //                                                  workoutType: self.workoutType,
-        //                                                  date: self.startDate, value: currentHeartRate)
-        //            }
-        //            .store(in: &cancellables)
-        
-        Timer.publish(every: 5.0, on: .main, in: .common)
+        Timer.publish(every: 3.0, on: .main, in: .common)
             .autoconnect()
             .handleEvents(receiveOutput: { print("⏱ Timer emitted: \($0)") })
             .combineLatest(heartRateMonitor.$currentHeartRate
@@ -201,10 +195,6 @@ class RecordWorkViewModel: ObservableObject {
             .sink { [weak self] (_, currentHeartRate) in
                 guard let self else { return }
                 print("🚀 Sending heart rate: \(currentHeartRate)")
-                self.currentHeartRate = HeartRate(id: self.workoutId,
-                                                  workoutType: self.workoutType,
-                                                  date: self.startDate,
-                                                  value: currentHeartRate)
                 self.watchsessionManager.sendHeartHeartRate(currentHeartRate)
             }
             .store(in: &cancellables)
@@ -213,13 +203,19 @@ class RecordWorkViewModel: ObservableObject {
     
     func startWorkout() {
         isStartingWorkout = true
+        if isPaired {
+            guard let workoutType = workoutType else { return }
+            predictor.setWorkoutType(type: workoutType)
+        }
     }
     
     func pauseWorkout() {
         watchsessionManager.pauseWorkout()
         sessionTimer.pause()
         isPaused = true
-        locationManager.stopLocationServices()
+        if !isPaired {
+            locationManager.stopLocationServices()
+        }
         heartRateMonitor.pauseWorkoutSession()
     }
     
@@ -227,14 +223,18 @@ class RecordWorkViewModel: ObservableObject {
         watchsessionManager.resumeWorkout()
         sessionTimer.resume()
         isPaused = false
-        locationManager.startLocationServices()
+        if !isPaired {
+            locationManager.startLocationServices()
+        }
         heartRateMonitor.resumeWorkoutSession()
     }
     
     func endWorkout() {
         watchsessionManager.endWorkout()
         totalElapsedTime = elapsedTime
-        locationManager.stopLocationServices()
+        if !isPaired {
+            locationManager.stopLocationServices()
+        }
         heartRateMonitor.stopWorkoutSession()
         getMetrics()
         sessionTimer.stop()
@@ -285,6 +285,20 @@ class RecordWorkViewModel: ObservableObject {
         motionManager.requestMotionPermission()
     }
     
+    func receiveNewMeasurement(_ m: WorkoutMeasurement) {
+        predictor.correct(with: m)
+        updateUIFromPredictor()
+    }
+
+    private func updateUIFromPredictor() {
+        let state = predictor.state
+        let now = Date()
+        self.distance = Distance(id: workoutId, workoutType: workoutType, date: now, measure: Measurement(value: state.distance, unit: .meters))
+        self.speed = Speed(id: workoutId, workoutType: workoutType, date: now, measure: Measurement(value: state.speed, unit: .kilometersPerHour))
+        self.steps = Step(id: workoutId, workoutType: workoutType, date: now, count: state.steps)
+        self.calories = Calorie(id: workoutId, workoutType: workoutType, date: now, count: state.calories)
+    }
+    
     
     func startCountdown() {
         if let workoutType = self.workoutType {
@@ -293,8 +307,10 @@ class RecordWorkViewModel: ObservableObject {
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             Task { @MainActor in
+                if !self.isPaired {
+                    self.locationManager.startLocationServices()
+                }
                 self.heartRateMonitor.startWorkoutSession()
-                self.locationManager.startLocationServices()
                 self.showCountdownView = true
                 Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
                     Task { @MainActor in
@@ -312,24 +328,4 @@ class RecordWorkViewModel: ObservableObject {
             }
         }
     }
-    
-    
-    //    func startCountdown() {
-    //        countdown = totalCount
-    //
-    //        cancellable = Timer
-    //            .publish(every: 1, on: .main, in: .common) // chạy trên main thread
-    //            .autoconnect()
-    //            .sink { [weak self] _ in
-    //                guard let self = self else { return }
-    //
-    //                if self.countdown > 1 {
-    //                    self.countdown -= 1
-    //                } else {
-    //                    self.countdown = 0
-    //                    self.cancellable?.cancel()
-    //                    self.startWorkout()
-    //                }
-    //            }
-    //    }
 }

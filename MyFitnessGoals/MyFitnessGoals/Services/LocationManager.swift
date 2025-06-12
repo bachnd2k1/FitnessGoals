@@ -52,6 +52,11 @@ final class LocationManager: NSObject, ObservableObject {
 //            self.locationAccessNotDetermine = (status == .notDetermined)
         }
     }
+    
+    func isLocationGranted() -> Bool {
+        return locationManager.authorizationStatus == .authorizedWhenInUse ||
+        locationManager.authorizationStatus == .authorizedAlways
+    }
 
     func requestPermission() {
         switch locationManager.authorizationStatus {
@@ -97,33 +102,6 @@ final class LocationManager: NSObject, ObservableObject {
 
 //@MainActor
 extension LocationManager: CLLocationManagerDelegate {
-    
-//    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-////        permissionResult.send(true)
-//        print("===>>> trigger locationManager.permissionResult")
-////        Task { @MainActor in
-//        DispatchQueue.main.async {
-//            if status != .notDetermined {
-//                self.permissionResult.send(true)
-//            }
-//            self.locationAccessIsDenied = (status == .denied || status == .restricted)
-//        }
-////        }
-//    }
-//    
-//    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-//        DispatchQueue.main.async {
-//            if self.locationManager.authorizationStatus == .authorizedAlways || self.locationManager.authorizationStatus == .authorizedWhenInUse {
-//                self.locationAccessIsDenied = false
-//                if self.isRecording {
-//                    self.locationManager.startUpdatingLocation()
-//                }
-//            } else if self.locationManager.authorizationStatus == .denied {
-//                self.locationAccessNotDetermine = true
-//                self.locationAccessIsDenied = true
-//            }
-//        }
-//    }
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         let status = manager.authorizationStatus

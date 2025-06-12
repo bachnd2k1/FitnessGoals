@@ -29,6 +29,14 @@ enum PermissionInfo: Int16, CaseIterable, Identifiable  {
         }
     }
     
+    var guideText: String {
+        switch self {
+        case .health: return ""
+        case .location: return String(format: L10n.guideLocationPermisson(AppInfo.appName))
+        case .motion: return String(format: L10n.guideMotionPermisson(AppInfo.appName))
+        }
+    }
+    
     var description: String {
         switch self {
         case .health: return String(format: L10n.descriptionHeathPermisson)
@@ -71,7 +79,7 @@ enum PermissionInfo: Int16, CaseIterable, Identifiable  {
     }
 }
 
-
+#if os(iOS)
 extension PermissionInfo {
     @MainActor func state(from viewModel: WorkoutViewModel) -> PermissionState {
         switch self {
@@ -93,3 +101,4 @@ extension PermissionInfo {
         }
     }
 }
+#endif

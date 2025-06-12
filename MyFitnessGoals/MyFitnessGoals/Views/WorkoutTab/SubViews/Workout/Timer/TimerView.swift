@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TimerView: View {
     @ObservedObject var viewModel: WorkoutViewModel
-    @EnvironmentObject var router: NavigationRouter
+    @EnvironmentObject var router: MobileNavigationRouter
     @Binding var errorIsThrown: Bool
     @Binding var accessIsDenied: Bool
     @State private var maxWidth: CGFloat = 0
@@ -156,7 +156,7 @@ struct TimerView: View {
 
 struct TimerView_Previews: PreviewProvider {
     static var previews: some View {
-        let viewModel = WorkoutViewModel(dataManager: .preview, type: nil, healthKitManager: .shared)
+        let viewModel = WorkoutViewModel(dataManager: .preview, type: nil, healthKitManager: .shared, workoutSessionManager: WorkoutSessionManager.shared)
         TimerView(
             viewModel: viewModel,
             errorIsThrown: .constant(false),
@@ -173,6 +173,6 @@ struct TimerView_Previews: PreviewProvider {
         } stopAction: {
             
         }
-        .environmentObject(NavigationRouter())
+        .environmentObject(MobileNavigationRouter())
     }
 }

@@ -10,7 +10,7 @@ import SwiftUI
 
 struct RecordWorkoutView: View {
     @ObservedObject var viewModel: WorkoutViewModel
-    @EnvironmentObject var router: NavigationRouter
+    @EnvironmentObject var router: MobileNavigationRouter
     //    @Binding var workoutType: WorkoutType?
     let workoutType: WorkoutType
     
@@ -196,8 +196,8 @@ struct RecordWorkoutView: View {
 
 struct RecordWorkoutView_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = WorkoutViewModel(dataManager: .preview, type: nil, healthKitManager: .shared)
+        let vm = WorkoutViewModel(dataManager: .preview, type: nil, healthKitManager: .shared, workoutSessionManager: WorkoutSessionManager.shared)
         RecordWorkoutView(workoutType: .running, viewModel: vm)
-            .environmentObject(NavigationRouter())
+            .environmentObject(MobileNavigationRouter())
     }
 }

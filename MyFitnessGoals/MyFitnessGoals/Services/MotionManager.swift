@@ -12,6 +12,9 @@ import Combine
 
 class MotionManager: ObservableObject {
     private let pedometer: CMPedometer
+    private let motionManager = CMMotionManager()
+    private var currentAccel: CMAcceleration = .init(x: 0, y: 0, z: 0) // ✳️ Lưu giá trị accelerometer
+    
     var isPedometerAvailable: Bool {
         CMPedometer.isStepCountingAvailable()
     }
@@ -22,10 +25,31 @@ class MotionManager: ObservableObject {
     
     let permissionResult = PassthroughSubject<Bool, Never>()
     
-
+    
     init() {
         self.pedometer = CMPedometer()
         checkAuthorizationStatusOnLaunch()
+        
+        //#if os(watchOS)
+        startAccelerometerUpdates()
+        //#endif
+    }
+    
+    func isMotionGranted() -> Bool {
+        let motionGranted: Bool = {
+            let semaphore = DispatchSemaphore(value: 0)
+            var granted = false
+            
+            CMMotionActivityManager().queryActivityStarting(from: Date(), to: Date(), to: .main) { _, error in
+                granted = (error == nil)
+                semaphore.signal()
+            }
+            
+            _ = semaphore.wait(timeout: .now() + 2) // wait max 2 seconds
+            return granted
+        }()
+        
+        return motionGranted
     }
     
     func checkAuthorizationStatusOnLaunch() {
@@ -56,7 +80,7 @@ class MotionManager: ObservableObject {
                     case .denied:
                         self.isAuthorizeMotion = false
                         print("User Denied Motion Permission ❌")
-//                        self.openAppSettings()
+                        //                        self.openAppSettings()
                     default:
                         break
                     }
@@ -98,13 +122,46 @@ class MotionManager: ObservableObject {
         }
     }
     
-    #if os(iOS)
+#if os(iOS)
     func openAppSettings() {
         if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(settingsURL)
         }
     }
-    #endif
+#endif
+    
+    // MARK: - Accelerometer (gia tốc)
+    
+    private func startAccelerometerUpdates() {
+        guard motionManager.isAccelerometerAvailable else {
+            print("❌ Accelerometer not available")
+            return
+        }
+        
+        motionManager.accelerometerUpdateInterval = 1.0 / 10.0
+        
+        motionManager.startAccelerometerUpdates(to: .main) { [weak self] data, error in
+            if let error = error {
+                print("❌ Accelerometer error: \(error.localizedDescription)")
+            }
+            
+            if let data = data {
+                print("📡 Received accel: x=\(data.acceleration.x), y=\(data.acceleration.y), z=\(data.acceleration.z)")
+                self?.currentAccel = data.acceleration
+            } else {
+                print("⚠️ No accelerometer data")
+            }
+        }
+    }
+    
+    
+    /// Tính độ lớn của vector gia tốc (magnitude)
+    func currentAccelerationMagnitude() -> Double {
+        let x = currentAccel.x
+        let y = currentAccel.y
+        let z = currentAccel.z
+        return sqrt(x * x + y * y + z * z)
+    }
     
     func getSteps(startDate: Date, endDate: Date)  {
         if isPedometerAvailable {

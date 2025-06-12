@@ -11,7 +11,6 @@ struct TabBarView: View {
     @StateObject var themeManager = ThemeManager()
     @State private var selectedTab = 0
     var dataManager: CoreDataManager
-    @EnvironmentObject var router: NavigationRouter
 
     init(dataManager: CoreDataManager) {
         self.dataManager = dataManager

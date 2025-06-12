@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PageView: View {
     @ObservedObject var viewModel: RecordWorkViewModel
-    //    @ObservedObject var viewModel: WorkoutViewModel
+//    @ObservedObject var viewModel: WatchWorkoutViewModel
     @State private var countdown = 5
     
     var body: some View {
@@ -26,14 +26,13 @@ struct PageView: View {
                         )
                     } else {
                         TutorialView(viewModel: viewModel)
+//                        EmptyView()
                     }
+//                    NewRecordView(viewModel: viewModel)
                     RecordWorkView(viewModel: viewModel)
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
                 .onAppear {
-//                    viewModel.startWorkout()
-//                    viewModel.startCountdown()
-//                    viewModel.startCountdown(after: 3)
                     viewModel.startCountdown()
                 }
             }
@@ -46,5 +45,5 @@ struct PageView: View {
 }
 
 #Preview {
-    PageView(viewModel: RecordWorkViewModel(dataManager: .preview, type: .cycling, healthKitManager: .shared))
+//    PageView(viewModel: RecordWorkViewModel(dataManager: .preview, type: .cycling, healthKitManager: .shared))
 }

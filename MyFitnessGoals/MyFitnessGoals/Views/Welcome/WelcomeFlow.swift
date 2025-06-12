@@ -20,11 +20,11 @@ struct WelcomeFlow: View {
                 WelcomeView(onNext: goNext)
             case 1:
                 FillInfoView(onNext: goNext)
+//            case 2:
+//                RequestPermissionView(viewModel: viewModel, permission:.health ,onNext: goNext)
             case 2:
-                RequestPermissionView(viewModel: viewModel, permission:.health ,onNext: goNext)
-            case 3:
                 RequestPermissionView(viewModel: viewModel, permission:.location ,onNext: goNext)
-            case 4:
+            case 3:
                 RequestPermissionView(viewModel: viewModel, permission:.motion ,onNext: completeSetup)
             default:
                 EmptyView()

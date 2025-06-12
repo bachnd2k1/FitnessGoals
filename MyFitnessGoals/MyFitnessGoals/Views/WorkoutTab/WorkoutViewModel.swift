@@ -47,7 +47,7 @@ final class WorkoutViewModel: ObservableObject {
     let delayCounterTimer = 3.0
 
 
-    
+    private var updateMetricsTimer: DispatchSourceTimer?
     private var prepareTimer: Timer?
     var timerIsPaused: Bool { state == .paused }
     var workoutType: WorkoutType?
@@ -62,7 +62,15 @@ final class WorkoutViewModel: ObservableObject {
     private var timerLiveActivity: Timer?
     #endif
     
-    init(dataManager: CoreDataManager, type: WorkoutType?, healthKitManager: HealthKitManager) {
+    deinit {
+        prepareTimer?.invalidate()
+        prepareTimer = nil
+        
+        updateMetricsTimer?.cancel()
+        updateMetricsTimer = nil
+    }
+    
+    init(dataManager: CoreDataManager, type: WorkoutType?, healthKitManager: HealthKitManager, workoutSessionManager: WorkoutSessionManager) {
         self.dataManager = dataManager
         self.workoutType = type
         self.healthKitManager = healthKitManager
@@ -139,6 +147,17 @@ final class WorkoutViewModel: ObservableObject {
                     locationManager.startLocationServices()
                     locationManager.endLocation = nil
                     startTimer()
+                    updateMetricsTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+                    updateMetricsTimer?.schedule(deadline: .now(), repeating: 5.0)
+                    updateMetricsTimer?.setEventHandler { [weak self] in
+                        guard let self else { return }
+                        let distance = self.distance?.value ?? 1
+                        let step = self.steps?.count ?? 1
+                        let calories = self.calories?.count ?? 1
+                        let speed = self.speed?.value ?? 1
+                        workoutSessionManager.updateMetrics(distance: distance, speed: speed / 3.6, steps: step, calories: calories)
+                    }
+                    updateMetricsTimer?.resume()
                 }
             }
             .store(in: &cancellables)
@@ -246,6 +265,15 @@ final class WorkoutViewModel: ObservableObject {
         timerLiveActivity?.invalidate()
         timerLiveActivity = nil
         #endif
+    }
+    
+    private func startUpdateMetricsTimer() {
+//        updateMetricsTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
+//        updateMetricsTimer?.schedule(deadline: .now(), repeating: 5.0)
+//        updateMetricsTimer?.setEventHandler { [weak self] in
+//            self?.performAction()
+//        }
+//        updateMetricsTimer?.resume()
     }
     
     private func formatTimeIntervalToString(_ elapsedTime: TimeInterval) -> String {

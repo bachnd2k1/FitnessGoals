@@ -11,7 +11,7 @@ struct RequestPermissonView: View {
     @State var isDenied: Bool = false
     @ObservedObject var viewModel: WorkoutViewModel
    
-    @EnvironmentObject var router: NavigationRouter
+    @EnvironmentObject var router: MobileNavigationRouter
 //    @Binding var workoutType: WorkoutType?
     @State private var offset: CGFloat = 0
     var workoutType: WorkoutType
@@ -95,6 +95,6 @@ struct RequestPermissonView: View {
 
 struct RequestPermissonView_Previews: PreviewProvider {
     static var previews: some View {
-        RequestPermissonView(workoutType: .running, viewModel: .init(dataManager: .preview, type: nil, healthKitManager: .shared), permissionInfo: .location)
+        RequestPermissonView(workoutType: .running, viewModel: .init(dataManager: .preview, type: nil, healthKitManager: .shared, workoutSessionManager: WorkoutSessionManager()), permissionInfo: .location)
     }
 }

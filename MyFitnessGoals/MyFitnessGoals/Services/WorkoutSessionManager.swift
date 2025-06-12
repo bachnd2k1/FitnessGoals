@@ -13,7 +13,7 @@ import CoreMotion
 class WorkoutSessionManager: NSObject, ObservableObject {
     static let shared = WorkoutSessionManager()
     private let session: WCSession
-    var router: NavigationRouter?
+    var router: MobileNavigationRouter?
     
     @Published var isWorkoutActive = false
     @Published var workoutType: WorkoutType?
@@ -37,13 +37,18 @@ class WorkoutSessionManager: NSObject, ObservableObject {
         }
     }
     
+    func isWatchAvailability() -> Bool {
+        let session = WCSession.default
+        return session.isPaired && session.isWatchAppInstalled
+    }
+    
     func startWorkout(type: WorkoutType) {
         workoutType = type
         startDate = Date()
         isWorkoutActive = true
         
         let message: [String: Any] = [
-            "command": "startWorkout",
+            "command": WorkoutCommand.startWorkout.rawValue,
             "type": type.rawValue,
             "startDate": startDate as Any
         ]
@@ -53,36 +58,35 @@ class WorkoutSessionManager: NSObject, ObservableObject {
     
     func pauseWorkout() {
         isWorkoutActive = false
-        let message: [String: Any] = ["command": "pauseWorkout"]
+        let message: [String: Any] = ["command": WorkoutCommand.pauseWorkout.rawValue]
         sendMessage(message)
     }
     
     func resumeWorkout() {
         isWorkoutActive = true
-        let message: [String: Any] = ["command": "resumeWorkout"]
+        let message: [String: Any] = ["command": WorkoutCommand.resumeWorkout.rawValue]
         sendMessage(message)
     }
     
     func endWorkout() {
         isWorkoutActive = false
-        let message: [String: Any] = ["command": "endWorkout"]
+        let message: [String: Any] = ["command": WorkoutCommand.endWorkout.rawValue]
         sendMessage(message)
     }
     
-    func updateMetrics(distance: Double, speed: Double, heartRate: Double, steps: Int, calories: Int) {
+    func updateMetrics(distance: Double, speed: Double, steps: Int, calories: Int) {
         self.distance = distance
         self.speed = speed
-        self.heartRate = heartRate
         self.steps = steps
         self.calories = calories
         
         let message: [String: Any] = [
-            "command": "updateMetrics",
+            "command": WorkoutCommand.metrics.rawValue,
             "distance": distance,
             "speed": speed,
-            "heartRate": heartRate,
             "steps": steps,
-            "calories": calories
+            "calories": calories,
+            "timestamp": Date().timeIntervalSince1970
         ]
         
         sendMessage(message)
@@ -108,7 +112,7 @@ class WorkoutSessionManager: NSObject, ObservableObject {
         }
     }
     
-    func configure(router: NavigationRouter) {
+    func configure(router: MobileNavigationRouter) {
         self.router = router
     }
 }
@@ -166,6 +170,17 @@ extension WorkoutSessionManager: WCSessionDelegate {
                 if let heartRateValue = message["value"] as? Double {
                     router.setHeartRate(heartRate: heartRateValue)
                 }
+            case WorkoutCommand.checkPermissions.rawValue:
+                let locationManager = LocationManager()
+                let locationGranted = locationManager.isLocationGranted()
+                
+                let motionManger = MotionManager()
+                let motionGranted = motionManger.isMotionGranted()
+                
+                replyHandler?([
+                    WorkoutCommand.locationGranted.rawValue: locationGranted,
+                    WorkoutCommand.motionGranted.rawValue: motionGranted
+                ])
 //            case "updateMetrics":
 //                if let distance = message["distance"] as? Double {
 //                    self.distance = distance

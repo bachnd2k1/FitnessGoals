@@ -51,3 +51,7 @@
 "description_heath_permisson" = "Backup your workout data in Apple Health and enable all step counter and heart rate features.";
 "description_location_permisson" = "%@ needs access to your location to record your workouts.";
 "description_motion_permisson" = "%@ needs access to your motion service to record your workouts.";
+
+"guide_location_permisson" = "To record your workout, please grant location access. iPhone: Settings/ Privacy/ Location Services/ %@  -> While Using the App";
+"guide_motion_permisson" = "To record your workout, please grant motion access. iPhone: Settings/ Privacy/ Motion & Fitness/ %@  -> While Using the App.";
+

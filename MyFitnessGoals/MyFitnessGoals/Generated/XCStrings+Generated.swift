@@ -36,6 +36,14 @@ internal enum L10n {
   internal static let duration = L10n.tr("Localizable", "duration", fallback: "Duration")
   /// This will stop recording your current workout and save it to your history.
   internal static let endSessionTitleDialog = L10n.tr("Localizable", "end_session_title_dialog", fallback: "This will stop recording your current workout and save it to your history.")
+  /// To record your workout, please grant location access. iPhone: Settings/ Privacy/ Location Services/ %@  -> While Using the App
+  internal static func guideLocationPermisson(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "guide_location_permisson", String(describing: p1), fallback: "To record your workout, please grant location access. iPhone: Settings/ Privacy/ Location Services/ %@  -> While Using the App")
+  }
+  /// To record your workout, please grant motion access. iPhone: Settings/ Privacy/ Motion & Fitness/ %@  -> While Using the App.
+  internal static func guideMotionPermisson(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "guide_motion_permisson", String(describing: p1), fallback: "To record your workout, please grant motion access. iPhone: Settings/ Privacy/ Motion & Fitness/ %@  -> While Using the App.")
+  }
   /// Location Access Error
   internal static let locationError = L10n.tr("Localizable", "location_error", fallback: "Location Access Error")
   /// Please go to your Settings and enable Motion Services to be able to start recording a workout.

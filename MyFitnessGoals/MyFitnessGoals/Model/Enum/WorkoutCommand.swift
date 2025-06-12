@@ -14,4 +14,9 @@ enum WorkoutCommand: String {
     case endWorkout
     case cancelWorkout
     case heartRate
+    case metrics
+    case checkPermissions
+    case locationGranted
+    case motionGranted
+    case checkPairingStatus
 }

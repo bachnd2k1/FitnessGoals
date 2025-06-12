@@ -45,14 +45,20 @@ final class WelcomeFlowViewModel: ObservableObject {
     }
     
     func requestHealthPermisson() {
-        healthKitManager.requestAuthorization()
+        DispatchQueue.main.async {
+            self.healthKitManager.requestAuthorization()
+        }
     }
     
     func requestLocationPermisson() {
-        locationManager.requestPermission()
+        DispatchQueue.main.async {
+            self.locationManager.requestPermission()
+        }
     }
     
     func requestMotionPermisson() {
-        motionManager.requestMotionPermission()
+        DispatchQueue.main.async {
+            self.motionManager.requestMotionPermission()
+        }
     }
 }
