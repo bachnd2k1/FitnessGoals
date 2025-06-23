@@ -59,9 +59,7 @@ final class WorkoutPredictor {
         state.distance += state.speed * dt
         predictStep(steps: state.steps)
         
-        // 1 bước ~ 0.8 m -> số bước = distance / 0.8
-//        state.steps =  Int(state.distance / 0.8)
-        updateCalories()
+        predictCalories()
         self.lastUpdate = Date()
     }
     
@@ -75,14 +73,54 @@ final class WorkoutPredictor {
         }
     }
     
-    func updateCalories() {
+    func predictCalories() {
+        let age = UserDefaults.standard.getInt(for: .weight) ?? 30
+        let gender = UserDefaults.standard.getString(for: .gender) ?? "Male"
+        let weight = UserDefaults.standard.getInt(for: .weight) ?? 70
+        let height = UserDefaults.standard.getInt(for: .height) ?? 150
+        let distance = state.distance
+        let speed = state.speed
+        
+        // BMR (Basal Metabolic Rate) là tỷ lệ trao đổi chất cơ bản của cơ thể
+        // CT tính calories: Calories = (BMR / 24) × MET × duration (giờ)
+        
+        // CT BMR theo Mifflin–St Jeor Equation:
+        // Nữ giới: BMR = 10 × weight (kg) + 6.25 × height (cm) – 5 × age – 161
+        // Nam giới: 10 × weight (kg) + 6.25 × height (cm) – 5 × age + 5
+        
+        let met: Double
         switch state.workoutType {
         case .running:
-            state.calories = Int(state.distance / 1000 * 70)
+            met = 9.8
         case .walking:
-            state.calories = Int(state.distance / 1000 * 55)
+            met = 3.8
         case .cycling:
-            state.calories = Int(state.distance / 1000 * 25)
+            met = 6.8
         }
+        
+        let duration = distance / speed
+        
+        // Tính BMR
+        let bmr: Double
+        
+        if gender == "Male" {
+            bmr = 10.0 * Double(weight) + 6.25 * Double(height) - 5.0 * Double(age) + 5
+        } else {
+            bmr = 10.0 * Double(weight) + 6.25 * Double(height) - 5.0 * Double(age) - 161
+        }
+        
+        // Calories tiêu hao
+        let caloriesBurned = (bmr / 24.0) * met * duration
+        state.calories = Int(caloriesBurned)
+        
+        
+        //        switch state.workoutType {
+        //        case .running:
+        //            state.calories = Int(state.distance / 1000 * 70)
+        //        case .walking:
+        //            state.calories = Int(state.distance / 1000 * 55)
+        //        case .cycling:
+        //            state.calories = Int(state.distance / 1000 * 25)
+        //        }
     }
 }

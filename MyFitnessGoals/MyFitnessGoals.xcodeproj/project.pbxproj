@@ -78,6 +78,10 @@
 		52E1F27A2D42268A00024C1F /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52E1F2792D42268A00024C1F /* HistoryView.swift */; };
 		CA1023EA2DF679AB001154A6 /* WatchTimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA1023E92DF679AB001154A6 /* WatchTimerManager.swift */; };
 		CA1023EB2DF679AB001154A6 /* WatchTimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA1023E92DF679AB001154A6 /* WatchTimerManager.swift */; };
+		CA1D67072E01264F001F5599 /* StepOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA1D67062E01264F001F5599 /* StepOnboarding.swift */; };
+		CA1D67082E01264F001F5599 /* StepOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA1D67062E01264F001F5599 /* StepOnboarding.swift */; };
+		CA1D670A2E014019001F5599 /* Binding+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA1D67092E014019001F5599 /* Binding+Ext.swift */; };
+		CA1D670B2E014019001F5599 /* Binding+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA1D67092E014019001F5599 /* Binding+Ext.swift */; };
 		CA2434602DF1304900E464AE /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA24345F2DF1304900E464AE /* WelcomeView.swift */; };
 		CA24346D2DF136C000E464AE /* FillInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA24346C2DF136C000E464AE /* FillInfoView.swift */; };
 		CA2434702DF1376F00E464AE /* RequestPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA24346F2DF1376F00E464AE /* RequestPermissionView.swift */; };
@@ -87,9 +91,7 @@
 		CA2434792DF1426300E464AE /* WelcomeFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434782DF1426300E464AE /* WelcomeFlow.swift */; };
 		CA24347C2DF142F800E464AE /* AppEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA24347B2DF142F800E464AE /* AppEntryView.swift */; };
 		CA24347F2DF1453500E464AE /* WelcomeFlowViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA24347E2DF1453500E464AE /* WelcomeFlowViewModel.swift */; };
-		CA2434822DF1704C00E464AE /* PickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434812DF1704C00E464AE /* PickerSheet.swift */; };
-		CA2434842DF1708F00E464AE /* GenderPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434832DF1708F00E464AE /* GenderPickerSheet.swift */; };
-		CA2434862DF170C400E464AE /* WeightPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434852DF170C400E464AE /* WeightPickerSheet.swift */; };
+		CA2434862DF170C400E464AE /* BottomPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434852DF170C400E464AE /* BottomPickerSheet.swift */; };
 		CA2434C72DF2979800E464AE /* PermissionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434C62DF2979800E464AE /* PermissionState.swift */; };
 		CA2434C82DF2979800E464AE /* PermissionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2434C62DF2979800E464AE /* PermissionState.swift */; };
 		CA651DB42D8181F500B817E6 /* EmptyResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA651DB32D8181F500B817E6 /* EmptyResultView.swift */; };
@@ -290,6 +292,8 @@
 		52AA509B2D47939E00AB4054 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		52E1F2792D42268A00024C1F /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		CA1023E92DF679AB001154A6 /* WatchTimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchTimerManager.swift; sourceTree = "<group>"; };
+		CA1D67062E01264F001F5599 /* StepOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepOnboarding.swift; sourceTree = "<group>"; };
+		CA1D67092E014019001F5599 /* Binding+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+Ext.swift"; sourceTree = "<group>"; };
 		CA24345F2DF1304900E464AE /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		CA24346C2DF136C000E464AE /* FillInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FillInfoView.swift; sourceTree = "<group>"; };
 		CA24346F2DF1376F00E464AE /* RequestPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestPermissionView.swift; sourceTree = "<group>"; };
@@ -298,9 +302,7 @@
 		CA2434782DF1426300E464AE /* WelcomeFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeFlow.swift; sourceTree = "<group>"; };
 		CA24347B2DF142F800E464AE /* AppEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEntryView.swift; sourceTree = "<group>"; };
 		CA24347E2DF1453500E464AE /* WelcomeFlowViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeFlowViewModel.swift; sourceTree = "<group>"; };
-		CA2434812DF1704C00E464AE /* PickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerSheet.swift; sourceTree = "<group>"; };
-		CA2434832DF1708F00E464AE /* GenderPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenderPickerSheet.swift; sourceTree = "<group>"; };
-		CA2434852DF170C400E464AE /* WeightPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightPickerSheet.swift; sourceTree = "<group>"; };
+		CA2434852DF170C400E464AE /* BottomPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomPickerSheet.swift; sourceTree = "<group>"; };
 		CA2434C62DF2979800E464AE /* PermissionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionState.swift; sourceTree = "<group>"; };
 		CA651DB32D8181F500B817E6 /* EmptyResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyResultView.swift; sourceTree = "<group>"; };
 		CA651DB52D82ABA000B817E6 /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
@@ -421,6 +423,7 @@
 				CAE146462D800CD20017FCE3 /* RoundedCorner.swift */,
 				CAE1464A2D8012880017FCE3 /* UIColor + Ext.swift */,
 				CA69C2EF2D93BDA80081E4FE /* UINavigationController + Ext.swift */,
+				CA1D67092E014019001F5599 /* Binding+Ext.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -558,6 +561,7 @@
 				CA2434712DF1381200E464AE /* PermissionInfo.swift */,
 				CA2434742DF13AAF00E464AE /* AppInfo.swift */,
 				CA2434C62DF2979800E464AE /* PermissionState.swift */,
+				CA1D67062E01264F001F5599 /* StepOnboarding.swift */,
 			);
 			path = Enum;
 			sourceTree = "<group>";
@@ -774,9 +778,7 @@
 		CA2434802DF1702E00E464AE /* CustomView */ = {
 			isa = PBXGroup;
 			children = (
-				CA2434812DF1704C00E464AE /* PickerSheet.swift */,
-				CA2434832DF1708F00E464AE /* GenderPickerSheet.swift */,
-				CA2434852DF170C400E464AE /* WeightPickerSheet.swift */,
+				CA2434852DF170C400E464AE /* BottomPickerSheet.swift */,
 			);
 			path = CustomView;
 			sourceTree = "<group>";
@@ -1017,6 +1019,7 @@
 				CA651DE12D8808EB00B817E6 /* XCStrings+Generated.swift in Sources */,
 				52AA50802D477E3100AB4054 /* WorkoutChartView.swift in Sources */,
 				52AA50962D478EBA00AB4054 /* MapView.swift in Sources */,
+				CA1D67082E01264F001F5599 /* StepOnboarding.swift in Sources */,
 				CA651E212D890B0300B817E6 /* HealthKitManager.swift in Sources */,
 				529CC2A52D3F9270004AA2B9 /* DistanceEntity+CoreDataProperties.swift in Sources */,
 				527B03222D50BA9C0008FAE1 /* UserDefault + Ext.swift in Sources */,
@@ -1040,7 +1043,7 @@
 				529CC2A32D3F9270004AA2B9 /* CalorieEntity+CoreDataProperties.swift in Sources */,
 				CA651DB42D8181F500B817E6 /* EmptyResultView.swift in Sources */,
 				529CC2A82D3F9270004AA2B9 /* WorkoutEntity+CoreDataClass.swift in Sources */,
-				CA2434862DF170C400E464AE /* WeightPickerSheet.swift in Sources */,
+				CA2434862DF170C400E464AE /* BottomPickerSheet.swift in Sources */,
 				529CC2AE2D3F9AF2004AA2B9 /* SwipeButtonView.swift in Sources */,
 				CA651DB62D82ABA000B817E6 /* CustomTabBar.swift in Sources */,
 				52AA509A2D47910800AB4054 /* MapCoordinator.swift in Sources */,
@@ -1052,6 +1055,7 @@
 				527B03192D50AC520008FAE1 /* StatisticViewModel.swift in Sources */,
 				527B03172D5077020008FAE1 /* CalendarManager.swift in Sources */,
 				527B032E2D51C7010008FAE1 /* GoalViewModel.swift in Sources */,
+				CA1D670A2E014019001F5599 /* Binding+Ext.swift in Sources */,
 				529CC2A72D3F9270004AA2B9 /* StepEntity+CoreDataProperties.swift in Sources */,
 				CA24347C2DF142F800E464AE /* AppEntryView.swift in Sources */,
 				527FEEAE2D3CA6DA00C667CB /* Step.swift in Sources */,
@@ -1071,7 +1075,6 @@
 				CA24347F2DF1453500E464AE /* WelcomeFlowViewModel.swift in Sources */,
 				527FEEB92D3CAA0300C667CB /* WorkoutItemView.swift in Sources */,
 				CAA464CF2DEE87FB00B3D672 /* WorkoutCommand.swift in Sources */,
-				CA2434842DF1708F00E464AE /* GenderPickerSheet.swift in Sources */,
 				CAE145B62D7E80A20017FCE3 /* MapViewSwiftUI.swift in Sources */,
 				527FEFF52D3D2D8200C667CB /* FIlterType.swift in Sources */,
 				527FEEA62D3CA61900C667CB /* Workout.swift in Sources */,
@@ -1090,7 +1093,6 @@
 				CA2434602DF1304900E464AE /* WelcomeView.swift in Sources */,
 				527FEEC12D3CED3C00C667CB /* TimerManager.swift in Sources */,
 				52AA50912D478D7700AB4054 /* TimerView.swift in Sources */,
-				CA2434822DF1704C00E464AE /* PickerSheet.swift in Sources */,
 				CA2434722DF1381200E464AE /* PermissionInfo.swift in Sources */,
 				529CC2A92D3F9270004AA2B9 /* WorkoutEntity+CoreDataProperties.swift in Sources */,
 				527B03362D51CDCB0008FAE1 /* Color + Ext.swift in Sources */,
@@ -1110,6 +1112,7 @@
 			files = (
 				CA70EED12DC066DA00D25116 /* WorkoutType.swift in Sources */,
 				CA70EED22DC066DA00D25116 /* FIlterType.swift in Sources */,
+				CA1D67072E01264F001F5599 /* StepOnboarding.swift in Sources */,
 				CA85B2672DC9F476001DF097 /* HeartRate.swift in Sources */,
 				CA85B24C2DC9E087001DF097 /* WorkoutEntity+CoreDataClass.swift in Sources */,
 				CA85B24D2DC9E087001DF097 /* StepEntity+CoreDataProperties.swift in Sources */,
@@ -1120,6 +1123,7 @@
 				CA85B2522DC9E087001DF097 /* DistanceEntity+CoreDataClass.swift in Sources */,
 				CA85B2532DC9E087001DF097 /* CalorieEntity+CoreDataClass.swift in Sources */,
 				CA85B2542DC9E087001DF097 /* SpeedEntity+CoreDataProperties.swift in Sources */,
+				CA1D670B2E014019001F5599 /* Binding+Ext.swift in Sources */,
 				CA85B2582DC9E1AD001DF097 /* HealthKitManager.swift in Sources */,
 				CA85B2552DC9E087001DF097 /* StepEntity+CoreDataClass.swift in Sources */,
 				CA70EED32DC066DA00D25116 /* Period.swift in Sources */,
@@ -1321,9 +1325,12 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MyFitnessGoals/Info.plist;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "MyFitnessGoals need to access to your health data to provide better insights.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "MyFitnessGoals need permission to update your health data.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We need your location to provide a seamless experience.";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "We need your location to track your activity even when the app is in the background.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to track your activity.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "This app uses motion data to enhance the user experience and provide activity tracking.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -1357,9 +1364,12 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MyFitnessGoals/Info.plist;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "MyFitnessGoals need to access to your health data to provide better insights.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "MyFitnessGoals need permission to update your health data.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We need your location to provide a seamless experience.";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "We need your location to track your activity even when the app is in the background.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to track your activity.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "This app uses motion data to enhance the user experience and provide activity tracking.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FillInfoView: View {
-    var onNext: () -> Void
+    var onNext: (_ age: Int?, _ gender: String?, _ weight: Int?, _ height: Int?) -> Void
     
     @State private var age: Int? = nil
     @State private var showAgePicker = false
@@ -19,6 +19,9 @@ struct FillInfoView: View {
     
     @State private var weight: Int? = nil
     @State private var showWeightPicker = false
+    
+    @State private var height: Int? = nil
+    @State private var showHeightPicker = false
     
     var body: some View {
         VStack(spacing: 24) {
@@ -41,6 +44,10 @@ struct FillInfoView: View {
                     infoRow(icon: "scalemass", title: "Weight", value: weight != nil ? "\(weight!) kg" : "Not defined") {
                         showWeightPicker = true
                     }
+                    
+                    infoRow(icon: "figure.stand", title: "Height", value: height != nil ? "\(height!) cm" : "Not defined") {
+                        showHeightPicker = true
+                    }
                 }
                 .padding()
                 .background(Color(.systemGray6))
@@ -50,7 +57,9 @@ struct FillInfoView: View {
 
             Spacer()
 
-            Button(action: onNext) {
+            Button(action: {
+                onNext(age, gender, weight, height)
+            }) {
                 Text("Continue")
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -64,37 +73,41 @@ struct FillInfoView: View {
         }
         .padding(.top, 20)
         .sheet(isPresented: $showAgePicker) {
-            PickerSheet(title: "Select Age", selection: binding(for: $age, defaultValue: 30), range: 10...100)
+            BottomPickerSheet(title: "Select Age", options: Array(10...100), selection: $age.unwrap(default: 30))
                 .presentationDetents([.fraction(0.33)])
         }
         .sheet(isPresented: $showGenderPicker) {
-            GenderPickerSheet(title: "Select Gender", selection: binding(for: $gender, defaultValue: genderOptions.first!), options: genderOptions)
+            BottomPickerSheet(title: "Select Gender", options: genderOptions, selection: $gender.unwrap(default: genderOptions.first!))
                 .presentationDetents([.fraction(0.33)])
         }
         .sheet(isPresented: $showWeightPicker) {
-            WeightPickerSheet(title: "Select Weight", selection: binding(for: $weight, defaultValue: 70), range: 10...100)
+            BottomPickerSheet(title: "Select Weight", options: Array(30...150), selection: $weight.unwrap(default: 70))
+                .presentationDetents([.fraction(0.33)])
+        }
+        .sheet(isPresented: $showHeightPicker) {
+            BottomPickerSheet(title: "Select Height", options: Array(50...220), selection: $height.unwrap(default: 150))
                 .presentationDetents([.fraction(0.33)])
         }
     }
 
-    private func binding<T: Equatable>(
-        for source: Binding<T?>,
-        defaultValue: T,
-        allowedValues: [T]? = nil
-    ) -> Binding<T> {
-        Binding<T>(
-            get: { source.wrappedValue ?? defaultValue },
-            set: { newValue in
-                if let allowedValues = allowedValues {
-                    if allowedValues.contains(newValue) {
-                        source.wrappedValue = newValue
-                    }
-                } else {
-                    source.wrappedValue = newValue
-                }
-            }
-        )
-    }
+//    private func binding<T: Equatable>(
+//        for source: Binding<T?>,
+//        defaultValue: T,
+//        allowedValues: [T]? = nil
+//    ) -> Binding<T> {
+//        Binding<T>(
+//            get: { source.wrappedValue ?? defaultValue },
+//            set: { newValue in
+//                if let allowedValues = allowedValues {
+//                    if allowedValues.contains(newValue) {
+//                        source.wrappedValue = newValue
+//                    }
+//                } else {
+//                    source.wrappedValue = newValue
+//                }
+//            }
+//        )
+//    }
 
     private func infoRow(icon: String, title: String, value: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
@@ -125,5 +138,5 @@ struct FillInfoView: View {
 
 
 #Preview {
-    FillInfoView { }
+    FillInfoView { age,gender,weight, height in }
 }

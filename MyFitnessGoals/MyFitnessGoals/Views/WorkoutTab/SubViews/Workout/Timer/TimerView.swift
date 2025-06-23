@@ -10,8 +10,12 @@ import SwiftUI
 struct TimerView: View {
     @ObservedObject var viewModel: WorkoutViewModel
     @EnvironmentObject var router: MobileNavigationRouter
-    @Binding var errorIsThrown: Bool
-    @Binding var accessIsDenied: Bool
+    @Binding var errorLocationIsThrown: Bool
+    @Binding var locationAccessIsDenied: Bool
+    
+    @Binding var errorMocationIsThrown: Bool
+    @Binding var motionAccessIsDenied: Bool
+    
     @State private var maxWidth: CGFloat = 0
     let elapsedTime: TimeInterval
     let timerIsNil: Bool
@@ -23,8 +27,12 @@ struct TimerView: View {
 
     var body: some View {
         VStack {
-            if errorIsThrown || accessIsDenied {
+            if errorLocationIsThrown  {
                 Text("Location Access Error")
+                    .font(.title)
+                    .foregroundStyle(Color.accentColor)
+            } else if errorMocationIsThrown {
+                Text("Motion Access Error")
                     .font(.title)
                     .foregroundStyle(Color.accentColor)
             } else {
@@ -74,27 +82,28 @@ struct TimerView: View {
             }
             HStack(spacing: 10) {
                 if timerIsNil {
-                    TimerButtonView(label: viewModel.motionAccessIsDenied ? L10n.settingBtn : L10n.startBtn, color: .green, disabled: false) {
+                    TimerButtonView(label: (viewModel.motionAccessIsDenied || viewModel.locationAccessIsDenied) ? L10n.settingBtn : L10n.startBtn, color: .green, disabled: false) {
                         startAction()
                     }
                 } else {
-                    if errorIsThrown || accessIsDenied {
+                    if  locationAccessIsDenied {
                         TimerButtonView(label: L10n.settingBtn, color: .green, disabled: false) {
                             startAction()
                         }
-                
                     } else {
-                        if timerIsPaused {
-                            TimerButtonView(label: "Resume", color: .green, disabled: false, equalWidth: true) {
-                                resumeAction()
+                        if !errorLocationIsThrown && !errorMocationIsThrown {
+                            if timerIsPaused {
+                                TimerButtonView(label: "Resume", color: .green, disabled: false, equalWidth: true) {
+                                    resumeAction()
+                                }
+                            } else {
+                                TimerButtonView(label: "Pause", color: .yellow, disabled: false, equalWidth: true) {
+                                    pauseAction()
+                                }
                             }
-                        } else {
-                            TimerButtonView(label: "Pause", color: .yellow, disabled: false, equalWidth: true) {
-                                pauseAction()
+                            TimerButtonView(label: "Stop", color: .red, disabled: false, equalWidth: true) {
+                                stopAction()
                             }
-                        }
-                        TimerButtonView(label: "Stop", color: .red, disabled: false, equalWidth: true) {
-                            stopAction()
                         }
                     }
                 }
@@ -159,8 +168,10 @@ struct TimerView_Previews: PreviewProvider {
         let viewModel = WorkoutViewModel(dataManager: .preview, type: nil, healthKitManager: .shared, workoutSessionManager: WorkoutSessionManager.shared)
         TimerView(
             viewModel: viewModel,
-            errorIsThrown: .constant(false),
-            accessIsDenied: .constant(false),
+            errorLocationIsThrown: .constant(false),
+            locationAccessIsDenied: .constant(false),
+            errorMocationIsThrown: .constant(false),
+            motionAccessIsDenied: .constant(false),
             elapsedTime: 5130,
             timerIsNil: false,
         timerIsPaused: false

@@ -25,11 +25,12 @@ struct SelectWorkoutTypeView: View {
                     ForEach(WorkoutType.allCases, id: \.self) { workoutType in
                         WorkoutItemView(workoutType: workoutType) {
                             router.openRecordWorkout(type: workoutType)
+                            viewModel.workoutType = workoutType
                         }
                         .fullScreenCover(item: $router.currentWorkoutType) { workoutType in
-                            if viewModel.locationAccessIsDenied {
+                            if viewModel.locationAccessIsDenied && !viewModel.locationAccessNotDetermine {
                                 RequestPermissonView(workoutType: workoutType, viewModel: viewModel, permissionInfo: .location)
-                            } else if viewModel.motionAccessIsDenied {
+                            } else if viewModel.motionAccessIsDenied && !viewModel.motionAccessNotDetermine {
                                 RequestPermissonView(workoutType: workoutType, viewModel: viewModel, permissionInfo: .motion)
                             } else {
                                 RecordWorkoutView(workoutType: workoutType,viewModel: viewModel)

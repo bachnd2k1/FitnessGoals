@@ -11,7 +11,6 @@ import Combine
 import SwiftUI
 import UIKit
 
-//@MainActor
 final class LocationManager: NSObject, ObservableObject {
     private let locationManager = CLLocationManager()
     private var isRecording = false
@@ -46,10 +45,10 @@ final class LocationManager: NSObject, ObservableObject {
     }
     
     func updatePermissionStatus() {
-        let status = locationManager.authorizationStatus  // ✅ Use instance property
-        DispatchQueue.main.async {  // ✅ Correct closure syntax
-            self.locationAccessIsDenied = (status == .denied || status == .restricted || status == .notDetermined)
-//            self.locationAccessNotDetermine = (status == .notDetermined)
+        let status = locationManager.authorizationStatus
+        DispatchQueue.main.async {
+            self.locationAccessIsDenied = (status == .denied || status == .restricted)
+            self.locationAccessNotDetermine = (status == .notDetermined)
         }
     }
     
@@ -73,6 +72,7 @@ final class LocationManager: NSObject, ObservableObject {
         default:
             break
         }
+        updatePermissionStatus()
     }
 
     #if os(iOS)
@@ -98,31 +98,30 @@ final class LocationManager: NSObject, ObservableObject {
         locationManager.stopUpdatingLocation()
         endLocation = locations.last
     }
+    
+    func reset() {
+        locations.removeAll()
+        distances.removeAll()
+        speeds.removeAll()
+        altitudes.removeAll()
+        totalDistance = 0
+        endLocation = nil
+        previousLocation = nil
+    }
 }
 
-//@MainActor
 extension LocationManager: CLLocationManagerDelegate {
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         let status = manager.authorizationStatus
         DispatchQueue.main.async {
-            switch status {
-            case .authorizedAlways, .authorizedWhenInUse:
-                self.locationAccessIsDenied = false
+            self.locationAccessNotDetermine = (status == .notDetermined)
+            self.locationAccessIsDenied = (status == .denied || status == .restricted)
+
+            if status == .authorizedAlways || status == .authorizedWhenInUse {
                 if self.isRecording {
                     self.locationManager.startUpdatingLocation()
                 }
-
-            case .denied, .restricted:
-                self.locationAccessIsDenied = true
-                self.locationAccessNotDetermine = false
-
-            case .notDetermined:
-                self.locationAccessNotDetermine = true
-                self.locationAccessIsDenied = false
-
-            @unknown default:
-                break
             }
 
             // Notify viewModel
@@ -156,9 +155,7 @@ extension LocationManager: CLLocationManagerDelegate {
         DispatchQueue.main.async {
             guard let clError = error as? CLError else { return }
             switch clError {
-            case CLError.denied:
-                self.locationAccessIsDenied = true
-            case CLError.promptDeclined:
+            case CLError.denied, CLError.promptDeclined:
                 self.locationAccessIsDenied = true
             default:
                 self.locationAccessThrowsError = true

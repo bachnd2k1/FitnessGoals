@@ -105,6 +105,7 @@ struct SetGoalsView: View {
         case .distance: return formatter.string(for: abs(distance)) ?? ""
         case .calories: return formatter.string(for: abs(Double(calories))) ?? ""
         case .steps: return formatter.string(for: abs(Double(steps))) ?? ""
+        default: return ""
         }
     }
     
@@ -126,6 +127,7 @@ struct SetGoalsView: View {
             } else {
                 UserDefaults.standard.setValue(steps - 500, forKey: measure.rawValue)
             }
+        default: break
         }
     }
     
@@ -134,6 +136,7 @@ struct SetGoalsView: View {
         case .distance: UserDefaults.standard.setValue(distance + 0.5, forKey: measure.rawValue)
         case .calories: UserDefaults.standard.setValue(calories + 50, forKey: measure.rawValue)
         case .steps: UserDefaults.standard.setValue(steps + 500, forKey: measure.rawValue)
+        default: break
         }
     }
 }

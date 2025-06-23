@@ -11,7 +11,6 @@ import SwiftUI
 struct RecordWorkoutView: View {
     @ObservedObject var viewModel: WorkoutViewModel
     @EnvironmentObject var router: MobileNavigationRouter
-    //    @Binding var workoutType: WorkoutType?
     let workoutType: WorkoutType
     
     @State private var showAlert = false
@@ -19,7 +18,6 @@ struct RecordWorkoutView: View {
     @State private var finishedWorkout = false
     @State private var isFullScreenMap = false
     @State private var isCancelWorkout = false
-    //    @State private var shouldStartImmediately: Bool
     
     @State private var countdown = 5
     
@@ -69,23 +67,23 @@ struct RecordWorkoutView: View {
                                 }
                             }
                         }
-                        if viewModel.motionAccessIsDenied {
-                            Spacer()
-                            DeniedPermissionView()
-                        }
+//                        if viewModel.motionAccessIsDenied {
+//                            Spacer()
+//                            DeniedPermissionView()
+//                        }
                         Spacer()
                         if !isFullScreenMap {
                             TimerView(
                                 viewModel: viewModel,
-                                errorIsThrown: $viewModel.locationAccessThrowsError,
-                                accessIsDenied: $viewModel.motionAccessIsDenied,
+                                errorLocationIsThrown: $viewModel.locationAccessThrowsError,
+                                locationAccessIsDenied: $viewModel.locationAccessIsDenied,
+                                errorMocationIsThrown: $viewModel.motionAccessThrowsError,
+                                motionAccessIsDenied: $viewModel.motionAccessIsDenied,
                                 elapsedTime: viewModel.elapsedTime,
                                 timerIsNil: viewModel.timerIsNil,
                                 timerIsPaused: viewModel.timerIsPaused
                             ) {
-                                if (!viewModel.locationAccessIsDenied && !viewModel.locationAccessThrowsError)
-                                    ||
-                                    (!viewModel.motionAccessIsDenied && viewModel.motionAccessThrowsError) {
+                                if viewModel.hasLocationPermission && viewModel.hasMotionPermission {
                                     viewModel.startCountdown()
                                 } else {
                                     viewModel.requestPermisson()
@@ -142,9 +140,7 @@ struct RecordWorkoutView: View {
                         .alert(L10n.warning, isPresented: $isCancelWorkout) {
                             Button(L10n.yes) {
                                 viewModel.cancelWorkout()
-                                //                            workoutType = nil
-                                router.currentWorkoutType = nil
-                                router.endWorkoutThroughWatchCall()
+                                router.cancelWorkoutThroughWatchCall()
                             }
                             Button(L10n.no, role: .cancel) {
                                 isCancelWorkout = false
@@ -172,10 +168,8 @@ struct RecordWorkoutView: View {
         .onChange(of: router.shouldEndWorkout) {
             if router.shouldEndWorkout {
                 timerIsStopped = true
-                //                viewModel.endWorkout()
-                //                router.shouldEndWorkout = false
                 viewModel.endWorkout()
-                router.currentWorkoutType = nil
+                router.endWorkoutThroughWatchCall()
                 viewModel.addWorkout()
                 router.shouldEndWorkout = false // Reset trigger
             }

@@ -45,11 +45,27 @@ class MobileNavigationRouter: ObservableObject {
     func resumeWorkoutThroughWatchCall() {
         shouldResumeWorkout = true
     }
+        
+    func cancelWorkoutThroughWatchCall() {
+        currentWorkoutType = nil
+        shouldStartImmediately = false
+        shouldPauseWorkout = false
+        shouldResumeWorkout = false
+        delayTime = 0
+        startDate = nil
+        heartRate = nil
+        shouldStartWorkout = false
+        shouldEndWorkout = false
+    }
     
     func endWorkoutThroughWatchCall() {
+        currentWorkoutType = nil
+        shouldStartWorkout = false
         shouldEndWorkout = true
         currentWorkoutType = nil
         shouldStartImmediately = false
+        shouldPauseWorkout = false
+        shouldResumeWorkout = false
         delayTime = 0
         startDate = nil
         heartRate = nil

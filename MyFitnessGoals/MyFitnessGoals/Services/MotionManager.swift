@@ -11,7 +11,7 @@ import UIKit
 import Combine
 
 class MotionManager: ObservableObject {
-    private let pedometer: CMPedometer
+    private let pedometer = CMPedometer()
     private let motionManager = CMMotionManager()
     private var currentAccel: CMAcceleration = .init(x: 0, y: 0, z: 0) // ✳️ Lưu giá trị accelerometer
     
@@ -20,18 +20,18 @@ class MotionManager: ObservableObject {
     }
     @Published var steps: Int?
     @Published var error: String = ""
-    @Published var isAuthorizeMotion: Bool?
+    @Published var motionAccessIsDenied: Bool = false
+    @Published var motionAccessThrowsError: Bool = false
     @Published var motionAccessNotDetermine: Bool = false
     
     let permissionResult = PassthroughSubject<Bool, Never>()
     
     
     init() {
-        self.pedometer = CMPedometer()
         checkAuthorizationStatusOnLaunch()
         
         //#if os(watchOS)
-        startAccelerometerUpdates()
+//        startAccelerometerUpdates()
         //#endif
     }
     
@@ -66,61 +66,71 @@ class MotionManager: ObservableObject {
         print("Status requestMotionPermission\(status)")
         switch status {
         case .notDetermined:
-            let now = Date()
-            let fiveMinutesAgo = Calendar.current.date(byAdding: .minute, value: -5, to: now) ?? now
-            pedometer.queryPedometerData(from: fiveMinutesAgo, to: now) { _, error in
-                DispatchQueue.main.async {
-                    let newStatus = CMPedometer.authorizationStatus()
-                    print("Updated Status: \(newStatus)")
-                    self.permissionResult.send(true)
-                    switch newStatus {
-                    case .authorized:
-                        self.isAuthorizeMotion = true
-                        print("User Allowed Motion Permission ✅")
-                    case .denied:
-                        self.isAuthorizeMotion = false
-                        print("User Denied Motion Permission ❌")
-                        //                        self.openAppSettings()
-                    default:
-                        break
-                    }
-                }
-            }
+            requestPermissionViaQuery()
         case .denied:
-            DispatchQueue.main.async {
-                //                self.updateAuthorizationState(status: .denied)
-                self.isAuthorizeMotion = false
-            }
 #if os(iOS)
             openAppSettings()
 #endif
-        case .authorized:
-            DispatchQueue.main.async {
-                //                self.updateAuthorizationState(status: .authorized)
-                self.isAuthorizeMotion = true
-            }
         default:
             break
         }
-        
+        checkAuthorizationStatusOnLaunch()
         print("Status requestMotionPermission after \(status)")
     }
     
-    func updateAuthorizationState(status: CMAuthorizationStatus) {
-        switch status {
-        case .notDetermined:
-            isAuthorizeMotion = nil
-            motionAccessNotDetermine = true
-        case .denied:
-            isAuthorizeMotion = false
-            motionAccessNotDetermine = false
-        case .authorized:
-            isAuthorizeMotion = true
-            motionAccessNotDetermine = false
-        default:
-            break
+    private func requestPermissionViaQuery() {
+        let now = Date()
+        let fiveMinutesAgo = Calendar.current.date(byAdding: .minute, value: -5, to: now) ?? now
+
+        pedometer.queryPedometerData(from: fiveMinutesAgo, to: now) { _, _ in
+            DispatchQueue.main.async {
+                let newStatus = CMPedometer.authorizationStatus()
+                self.updateAuthorizationState(status: newStatus)
+                self.permissionResult.send(true)
+            }
         }
     }
+    
+//    func updateAuthorizationState(status: CMAuthorizationStatus) {
+//        switch status {
+//        case .notDetermined:
+//            motionAccessIsDenied = false
+//            motionAccessNotDetermine = true
+//            motionAccessThrowsError = false
+//        case .denied:
+//            motionAccessIsDenied = true
+//            motionAccessNotDetermine = false
+//            motionAccessThrowsError = false
+//        case .authorized:
+//            motionAccessIsDenied = false
+//            motionAccessNotDetermine = false
+//            motionAccessThrowsError = false
+//        default:
+//            motionAccessThrowsError = true
+//        }
+//    }
+    
+    private func updateAuthorizationState(status: CMAuthorizationStatus) {
+        motionAccessIsDenied = (status == .denied)
+        motionAccessNotDetermine = (status == .notDetermined)
+        motionAccessThrowsError = !(status == .authorized || status == .denied || status == .notDetermined)
+    }
+    
+    func reset() {
+        steps = nil
+        error = ""
+        motionAccessIsDenied = false
+        motionAccessThrowsError = false
+        motionAccessNotDetermine = false
+        currentAccel = .init(x: 0, y: 0, z: 0)
+        
+        // Optionally stop accelerometer updates if you were using them
+        if motionManager.isAccelerometerActive {
+            motionManager.stopAccelerometerUpdates()
+        }
+    }
+
+
     
 #if os(iOS)
     func openAppSettings() {

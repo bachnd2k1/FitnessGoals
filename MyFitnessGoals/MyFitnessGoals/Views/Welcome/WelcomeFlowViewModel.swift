@@ -16,7 +16,7 @@ final class WelcomeFlowViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-   
+    
     @Published var isRequestHealthPermisson: Bool = false
     @Published var isRequestLocationPermisson: Bool = false
     @Published var isRequestMotionPermisson: Bool = false
@@ -38,7 +38,6 @@ final class WelcomeFlowViewModel: ObservableObject {
         
         locationManager.permissionResult
             .sink { value in
-                print("===>>>  locationManager.permissionResult", value)
                 self.isRequestLocationPermisson = true
             }
             .store(in: &cancellables)
@@ -59,6 +58,21 @@ final class WelcomeFlowViewModel: ObservableObject {
     func requestMotionPermisson() {
         DispatchQueue.main.async {
             self.motionManager.requestMotionPermission()
+        }
+    }
+    
+    func saveUserInfo(age: Int?, gender: String?, weight: Int?, height: Int?) {
+        if let age = age {
+            UserDefaults.standard.save(age, for: .age)
+        }
+        if let gender = gender {
+            UserDefaults.standard.save(gender, for: .gender)
+        }
+        if let weight = weight {
+            UserDefaults.standard.save(weight, for: .weight)
+        }
+        if let height = height {
+            UserDefaults.standard.save(height, for: .height)
         }
     }
 }

@@ -184,19 +184,6 @@ class HealthKitManager {
         healthStore.execute(query)
     }
     
-    //    func fetchDistance(date: Date) {
-    //        let distanceType = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!
-    //        let startOfDay = Calendar.current.startOfDay(for: date)
-    //
-    //        let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: Date(), options: .strictStartDate)
-    //
-    //        let query = HKStatisticsQuery(quantityType: distanceType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, _ in
-    //            let distance = result?.sumQuantity()?.doubleValue(for: HKUnit.meter()) ?? 0
-    //            self.distance = self.distanceFormatter(for: distance) ?? "0"
-    //        }
-    //        print("Date - \(date) | distance - \(distance)")
-    //        healthStore.execute(query)
-    //    }
     
     func fetchDistance(date: Date) {
         let distanceType = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!

@@ -12,6 +12,10 @@ extension UserDefaults {
         case distance
         case calories
         case steps
+        case age
+        case gender
+        case weight
+        case height
     }
     
     static func setDefaultValues() {
@@ -33,5 +37,45 @@ extension UserDefaults {
     
     private func contains(key: Keys) -> Bool {
         return object(forKey: key.rawValue) != nil
+    }
+    
+    func save<T>(_ value: T?, for key: Keys) {
+        guard let value = value else {
+            removeObject(forKey: key.rawValue)
+            return
+        }
+        
+        switch value {
+        case let v as Int:
+            set(v, forKey: key.rawValue)
+        case let v as Double:
+            set(v, forKey: key.rawValue)
+        case let v as Float:
+            set(v, forKey: key.rawValue)
+        case let v as Bool:
+            set(v, forKey: key.rawValue)
+        case let v as String:
+            set(v, forKey: key.rawValue)
+        default:
+            print("Unsupported type for UserDefaults key: \(key.rawValue)")
+        }
+    }
+    
+    func get<T>(_ type: T.Type, for key: Keys) -> T? {
+        return object(forKey: key.rawValue) as? T
+    }
+    
+    func getInt(for key: Keys) -> Int? {
+        let value = object(forKey: key.rawValue) as? Int
+        return value
+    }
+    
+    func getDouble(for key: Keys) -> Double? {
+        let value = object(forKey: key.rawValue) as? Double
+        return value
+    }
+    
+    func getString(for key: Keys) -> String? {
+        return string(forKey: key.rawValue)
     }
 }

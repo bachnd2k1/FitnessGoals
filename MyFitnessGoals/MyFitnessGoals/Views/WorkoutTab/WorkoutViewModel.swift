@@ -33,6 +33,8 @@ final class WorkoutViewModel: ObservableObject {
     @Published var locationAccessNotDetermine: Bool = false
     @Published var locationAccessThrowsError: Bool = false
     @Published var locationAccessError = ""
+    @Published var hasLocationPermission: Bool = false
+    @Published var hasMotionPermission: Bool = false
     @Published var didCancelWorkout: Bool = false
     
     @Published var motionAccessIsDenied: Bool = false
@@ -125,17 +127,19 @@ final class WorkoutViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
-        
-        motionManager.$isAuthorizeMotion
+                
+        motionManager.$motionAccessIsDenied
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] isAuthorizeMotion in
-                guard let self else { return }
-                if let isAuthorizeMotion = isAuthorizeMotion {
-                    motionAccessIsDenied = !isAuthorizeMotion
-                    print("motionAccessIsDenied updated to: \(motionAccessIsDenied)")
-                }
-            }
-            .store(in: &cancellables)
+            .assign(to: &$motionAccessIsDenied)
+
+        motionManager.$motionAccessNotDetermine
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$motionAccessNotDetermine)
+
+        motionManager.$motionAccessThrowsError
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$motionAccessThrowsError)
+
         
         $isStartingWorkout
             .sink { [weak self] isStartingWorkout in
@@ -192,6 +196,18 @@ final class WorkoutViewModel: ObservableObject {
         motionManager.$motionAccessNotDetermine
             .receive(on: DispatchQueue.main)
             .assign(to: &$motionAccessNotDetermine)
+        
+        locationManager.$locationAccessIsDenied
+            .combineLatest(locationManager.$locationAccessThrowsError,
+                               locationManager.$locationAccessNotDetermine)
+            .map { !$0 && !$1 && !$2 }
+            .assign(to: &$hasLocationPermission)
+
+        motionManager.$motionAccessIsDenied
+            .combineLatest(motionManager.$motionAccessThrowsError,
+                               motionManager.$motionAccessNotDetermine)
+            .map { !$0 && !$1 && !$2 }
+            .assign(to: &$hasMotionPermission)
         
         #if os(iOS)
         manager.onPauseAction = {
@@ -267,15 +283,6 @@ final class WorkoutViewModel: ObservableObject {
         #endif
     }
     
-    private func startUpdateMetricsTimer() {
-//        updateMetricsTimer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
-//        updateMetricsTimer?.schedule(deadline: .now(), repeating: 5.0)
-//        updateMetricsTimer?.setEventHandler { [weak self] in
-//            self?.performAction()
-//        }
-//        updateMetricsTimer?.resume()
-    }
-    
     private func formatTimeIntervalToString(_ elapsedTime: TimeInterval) -> String {
         let duration = Duration(
             secondsComponent: Int64(elapsedTime),
@@ -311,21 +318,6 @@ final class WorkoutViewModel: ObservableObject {
         return formatter
     }()
     
-    func resetState() {
-        state = nil
-        elapsedTime = 0
-        timerIsNil = true
-        workoutStarted = false
-        startDate = nil
-        distance = nil
-        speed = nil
-        route = []
-        endLocation = nil
-        steps = nil
-        calories = nil
-        totalElapsedTime = 0
-        totalElapsedTime = 0
-    }
         
     func startCountdown(delay: TimeInterval = 0.0, startDate: Date? = nil) {
         isPreparing = true
@@ -402,6 +394,8 @@ final class WorkoutViewModel: ObservableObject {
         timer.stop()
         isStartingWorkout = false
         
+        resetState()
+        
         #if os(iOS)
         manager.endActivity()
         #endif
@@ -423,6 +417,7 @@ final class WorkoutViewModel: ObservableObject {
             calories: calories)
         dataManager.add(workout)
         dataManager.addMetrics(to: workout)
+        resetState()
     }
     
     private func getMetrics() {
@@ -433,18 +428,90 @@ final class WorkoutViewModel: ObservableObject {
         speed = Speed(id: workoutId, workoutType: workoutType, date: startDate,
                       measure: Measurement.init(value: averageSpeed, unit: .metersPerSecond))
         
-        switch workoutType {
-        case .running:
+        calculateCalories()
+    }
+    
+    func calculateCalories() {
+        let age = UserDefaults.standard.getInt(for: .weight) ?? 30
+        let gender = UserDefaults.standard.getString(for: .gender) ?? "Male"
+        let weight = UserDefaults.standard.getInt(for: .weight) ?? 70
+        let height = UserDefaults.standard.getInt(for: .height) ?? 150
+        
+        // BMR (Basal Metabolic Rate) là tỷ lệ trao đổi chất cơ bản của cơ thể
+        // CT tính calories: Calories = (BMR / 24) × MET × duration (giờ)
+        
+        // CT BMR theo Mifflin–St Jeor Equation:
+        // Nữ giới: BMR = 10 × weight (kg) + 6.25 × height (cm) – 5 × age – 161
+        // Nam giới: 10 × weight (kg) + 6.25 × height (cm) – 5 × age + 5
+        
+        if let distance = distance?.value, let speed = speed?.value, speed != 0, distance != 0 {
+            let duration = distance / speed
+            var met = 0.0
+            switch workoutType {
+            case .running:
+                met = 9.8
+            case .walking:
+                met = 3.8
+            case .cycling:
+                met = 6.8
+            case .none:
+                break
+            }
+            
+            // Tính BMR
+            let bmr: Double
+            
+            if gender == "Male" {
+                bmr = 10.0 * Double(weight) + 6.25 * Double(height) - 5.0 * Double(age) + 5
+            } else {
+                bmr = 10.0 * Double(weight) + 6.25 * Double(height) - 5.0 * Double(age) - 161
+            }
+            
+            // Calories tiêu hao
+            let caloriesBurned = (bmr / 24.0) * met * duration
             calories = Calorie(id: workoutId, workoutType: workoutType, date: startDate,
-                               count: Int(totalDistance / 1000 * 70))
-        case .walking:
-            calories = Calorie(id: workoutId, workoutType: workoutType, date: startDate,
-                               count: Int(totalDistance / 1000 * 55))
-        case .cycling:
-            calories = Calorie(id: workoutId, workoutType: workoutType, date: startDate,
-                               count: Int(totalDistance / 1000 * 25))
-        case nil:
-            break
+                                                   count: Int(caloriesBurned))
         }
+    }
+    
+    
+    func resetState() {
+        // Core workout state
+        state = nil
+        elapsedTime = 0
+        totalElapsedTime = 0
+        timerIsNil = true
+        workoutStarted = false
+        isStartingWorkout = false
+        isPreparing = false
+        showCountdownView = false
+        countdown = 5
+
+        // Workout metadata
+        startDate = nil
+        workoutId = UUID()
+
+        // Metrics
+        distance = nil
+        speed = nil
+        steps = nil
+        calories = nil
+
+        // Route & location
+        route.removeAll()
+        endLocation = nil
+        
+        locationManager.reset()
+        motionManager.reset()
+
+        // Internal flags
+        didCancelWorkout = false
+        isPaused = false
+
+        // Timers
+        prepareTimer?.invalidate()
+        prepareTimer = nil
+        updateMetricsTimer?.cancel()
+        updateMetricsTimer = nil
     }
 }
