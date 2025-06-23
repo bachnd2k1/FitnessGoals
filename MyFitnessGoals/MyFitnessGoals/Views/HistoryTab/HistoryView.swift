@@ -39,6 +39,7 @@ struct HistoryView: View {
                 }
                 .listRowInsets(.init(top: 4, leading: 0, bottom: 4, trailing: 0))
                 .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear) 
             }
             .listStyle(.plain)
             .padding(.horizontal)

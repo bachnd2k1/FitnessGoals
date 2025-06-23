@@ -25,8 +25,6 @@ struct AppEntryView: View {
                     if hasFinishedSetup {
                         NavigationStack {
                             TabBarView(dataManager: dataManager)
-                                .environmentObject(router)
-                                .environmentObject(themeManager)
                                 .onAppear {
                                     let workoutSessionManager = WorkoutSessionManager.shared
                                     workoutSessionManager.configure(router: router)
@@ -41,6 +39,8 @@ struct AppEntryView: View {
                 Color.clear
             }
         }
+        .environmentObject(router)
+        .environmentObject(themeManager)
         .onAppear {
             if onboardingStarted && !onboardingCompleted {
                 hasFinishedSetup = true

@@ -29,6 +29,7 @@ struct WorkoutRowView: View {
             .font(.title3)
             .foregroundStyle(.white)
         }
+        .contentShape(Rectangle())
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button {
                 withAnimation {
@@ -42,8 +43,3 @@ struct WorkoutRowView: View {
     }
 }
 
-//struct WorkoutRowView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        WorkoutRowView(viewModel: HistoryViewModel(dataManager: .preview), workout: W)
-//    }
-//}
