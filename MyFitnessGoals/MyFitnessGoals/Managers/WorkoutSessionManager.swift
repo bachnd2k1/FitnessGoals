@@ -109,7 +109,9 @@ class WorkoutSessionManager: NSObject, ObservableObject {
             do {
                 try session.updateApplicationContext(message)
             } catch {
+                #if DEBUG
                 print("Error updating application context: \(error)")
+                #endif
             }
         }
     }
@@ -118,7 +120,9 @@ class WorkoutSessionManager: NSObject, ObservableObject {
 extension WorkoutSessionManager: WCSessionDelegate {
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error = error {
+            #if DEBUG
             print("Session activation failed with error: \(error.localizedDescription)")
+            #endif
         }
     }
     
@@ -150,24 +154,28 @@ extension WorkoutSessionManager: WCSessionDelegate {
             case "endWorkout":
                 self.isWorkoutActive = false
             case "updateMetrics":
-                if let distance = message["distance"] as? Double {
-                    self.distance = distance
-                }
-                if let speed = message["speed"] as? Double {
-                    self.speed = speed
-                }
-                if let heartRate = message["heartRate"] as? Double {
-                    self.heartRate = heartRate
-                }
-                if let steps = message["steps"] as? Int {
-                    self.steps = steps
-                }
-                if let calories = message["calories"] as? Int {
-                    self.calories = calories
-                }
+                self.updateLocalMetrics(from: message)
             default:
                 break
             }
+        }
+    }
+    
+    private func updateLocalMetrics(from message: [String: Any]) {
+        if let distance = message["distance"] as? Double {
+            self.distance = distance
+        }
+        if let speed = message["speed"] as? Double {
+            self.speed = speed
+        }
+        if let heartRate = message["heartRate"] as? Double {
+            self.heartRate = heartRate
+        }
+        if let steps = message["steps"] as? Int {
+            self.steps = steps
+        }
+        if let calories = message["calories"] as? Int {
+            self.calories = calories
         }
     }
     

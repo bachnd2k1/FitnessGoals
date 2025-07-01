@@ -1,5 +1,5 @@
 //
-//  WatchSessionManager.swift
+//  WorkoutSessionManager.swift
 //  MyFitnessGoals
 //
 //  Created by Nghiem Dinh Bach on 13/5/25.
@@ -14,16 +14,6 @@ class WorkoutSessionManager: NSObject, ObservableObject {
     static let shared = WorkoutSessionManager()
     private let session: WCSession
     var router: MobileNavigationRouter?
-    
-//    @Published var isWorkoutActive = false
-//    @Published var workoutType: WorkoutType?
-////    @Published var startDate: Date?
-//    @Published var elapsedTime: TimeInterval = 0
-//    @Published var distance: Double = 0
-//    @Published var speed: Double = 0
-//    @Published var heartRate: Double = 0
-//    @Published var steps: Int = 0
-//    @Published var calories: Int = 0
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -43,9 +33,6 @@ class WorkoutSessionManager: NSObject, ObservableObject {
     }
     
     func startWorkout(type: WorkoutType, startDate: Date) {
-//        workoutType = type
-//        isWorkoutActive = true
-        
         let message: [String: Any] = [
             "command": WorkoutCommand.startWorkout.rawValue,
             "type": type.rawValue,
@@ -56,29 +43,21 @@ class WorkoutSessionManager: NSObject, ObservableObject {
     }
     
     func pauseWorkout() {
-//        isWorkoutActive = false
         let message: [String: Any] = ["command": WorkoutCommand.pauseWorkout.rawValue]
         sendMessage(message)
     }
     
     func resumeWorkout() {
-//        isWorkoutActive = true
         let message: [String: Any] = ["command": WorkoutCommand.resumeWorkout.rawValue]
         sendMessage(message)
     }
     
     func endWorkout() {
-//        isWorkoutActive = false
         let message: [String: Any] = ["command": WorkoutCommand.endWorkout.rawValue]
         sendMessage(message)
     }
     
     func updateMetrics(distance: Double, speed: Double, steps: Int, calories: Int) {
-//        self.distance = distance
-//        self.speed = speed
-//        self.steps = steps
-//        self.calories = calories
-        
         let message: [String: Any] = [
             "command": WorkoutCommand.metrics.rawValue,
             "distance": distance,
@@ -106,7 +85,9 @@ class WorkoutSessionManager: NSObject, ObservableObject {
             do {
                 try session.updateApplicationContext(message)
             } catch {
+                #if DEBUG
                 print("Error updating application context: \(error)")
+                #endif
             }
         }
     }
@@ -119,7 +100,9 @@ class WorkoutSessionManager: NSObject, ObservableObject {
 extension WorkoutSessionManager: WCSessionDelegate {
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error = error {
+            #if DEBUG
             print("Session activation failed with error: \(error.localizedDescription)")
+            #endif
         }
     }
     
@@ -136,79 +119,67 @@ extension WorkoutSessionManager: WCSessionDelegate {
     }
     
     private func handleMessage(_ message: [String: Any], replyHandler: (([String: Any]) -> Void)? = nil) {
-        print("===>>> message", message)
+        #if DEBUG
+        print("Received message: \(message)")
+        #endif
+        
         guard let router = router else { return }
         guard let command = message["command"] as? String else { return }
+        
         DispatchQueue.main.async {
             switch command {
             case WorkoutCommand.startWorkout.rawValue:
-                if let typeRaw = message["type"] as? Int16,
-                   let type = WorkoutType(rawValue: typeRaw) {
-                    DispatchQueue.main.async {
-                        var delay: TimeInterval = 0
-                        
-                        if let startDateTimestamp = message["startDate"] as? TimeInterval {
-                            let startDate = Date(timeIntervalSince1970: startDateTimestamp)
-                            router.setStartDate(date: startDate)
-                            let receiveDate = Date()
-                            delay = receiveDate.timeIntervalSince(startDate)
-                        }
-                        router.setDelayTime(time: delay)
-                        router.startWorkoutThroughWatchCall()
-                        router.openRecordWorkout(type: type)
-                        
-                    }
-                }
+                self.handleStartWorkout(message: message, router: router)
             case WorkoutCommand.pauseWorkout.rawValue:
                 router.shouldPauseWorkout = true
             case WorkoutCommand.resumeWorkout.rawValue:
                 router.shouldResumeWorkout = true
-            case  WorkoutCommand.endWorkout.rawValue:
+            case WorkoutCommand.endWorkout.rawValue:
                 router.shouldEndWorkout = true
             case WorkoutCommand.heartRate.rawValue:
-                if let heartRateValue = message["value"] as? Double {
-                    router.setHeartRate(heartRate: heartRateValue)
-                }
+                self.handleHeartRate(message: message, router: router)
             case WorkoutCommand.checkPermissions.rawValue:
-                let locationManager = LocationManager()
-                let locationGranted = locationManager.isLocationGranted()
-                
-                let motionManger = MotionManager()
-                let motionGranted = motionManger.isMotionGranted()
-                
-                replyHandler?([
-                    WorkoutCommand.locationGranted.rawValue: locationGranted,
-                    WorkoutCommand.motionGranted.rawValue: motionGranted
-                ])
-//            case "updateMetrics":
-//                if let distance = message["distance"] as? Double {
-//                    self.distance = distance
-//                }
-//                if let speed = message["speed"] as? Double {
-//                    self.speed = speed
-//                }
-//                if let heartRate = message["heartRate"] as? Double {
-//                    self.heartRate = heartRate
-//                }
-//                if let steps = message["steps"] as? Int {
-//                    self.steps = steps
-//                }
-//                if let calories = message["calories"] as? Int {
-//                    self.calories = calories
-//                }
-//            case "checkPermissions":
-//                let motionStatus = CMMotionActivityManager.authorizationStatus()
-//                let locationStatus = CLLocationManager.authorizationStatus()
-//                
-//                let permissionStatus: [String: Any] = [
-//                    "motion": motionStatus.rawValue, // Int
-//                    "location": locationStatus.rawValue // Int
-//                ]
-//                replyHandler?(permissionStatus)
+                self.handleCheckPermissions(replyHandler: replyHandler)
             default:
                 break
             }
         }
+    }
+    
+    private func handleStartWorkout(message: [String: Any], router: MobileNavigationRouter) {
+        if let typeRaw = message["type"] as? Int16,
+           let type = WorkoutType(rawValue: typeRaw) {
+            var delay: TimeInterval = 0
+            
+            if let startDateTimestamp = message["startDate"] as? TimeInterval {
+                let startDate = Date(timeIntervalSince1970: startDateTimestamp)
+                router.setStartDate(date: startDate)
+                let receiveDate = Date()
+                delay = receiveDate.timeIntervalSince(startDate)
+            }
+            router.setDelayTime(time: delay)
+            router.startWorkoutThroughWatchCall()
+            router.openRecordWorkout(type: type)
+        }
+    }
+    
+    private func handleHeartRate(message: [String: Any], router: MobileNavigationRouter) {
+        if let heartRateValue = message["value"] as? Double {
+            router.setHeartRate(heartRate: heartRateValue)
+        }
+    }
+    
+    private func handleCheckPermissions(replyHandler: (([String: Any]) -> Void)?) {
+        let locationManager = LocationManager()
+        let locationGranted = locationManager.isLocationGranted()
+        
+        let motionManager = MotionManager()
+        let motionGranted = motionManager.isMotionGranted()
+        
+        replyHandler?([
+            WorkoutCommand.locationGranted.rawValue: locationGranted,
+            WorkoutCommand.motionGranted.rawValue: motionGranted
+        ])
     }
     
 #if os(iOS)
