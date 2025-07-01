@@ -91,47 +91,12 @@ class MotionManager: ObservableObject {
         }
     }
     
-//    func updateAuthorizationState(status: CMAuthorizationStatus) {
-//        switch status {
-//        case .notDetermined:
-//            motionAccessIsDenied = false
-//            motionAccessNotDetermine = true
-//            motionAccessThrowsError = false
-//        case .denied:
-//            motionAccessIsDenied = true
-//            motionAccessNotDetermine = false
-//            motionAccessThrowsError = false
-//        case .authorized:
-//            motionAccessIsDenied = false
-//            motionAccessNotDetermine = false
-//            motionAccessThrowsError = false
-//        default:
-//            motionAccessThrowsError = true
-//        }
-//    }
-    
     private func updateAuthorizationState(status: CMAuthorizationStatus) {
         motionAccessIsDenied = (status == .denied)
         motionAccessNotDetermine = (status == .notDetermined)
         motionAccessThrowsError = !(status == .authorized || status == .denied || status == .notDetermined)
     }
-    
-    func reset() {
-        steps = nil
-        error = ""
-        motionAccessIsDenied = false
-        motionAccessThrowsError = false
-        motionAccessNotDetermine = false
-        currentAccel = .init(x: 0, y: 0, z: 0)
-        
-        // Optionally stop accelerometer updates if you were using them
-        if motionManager.isAccelerometerActive {
-            motionManager.stopAccelerometerUpdates()
-        }
-    }
 
-
-    
 #if os(iOS)
     func openAppSettings() {
         if let settingsURL = URL(string: UIApplication.openSettingsURLString) {

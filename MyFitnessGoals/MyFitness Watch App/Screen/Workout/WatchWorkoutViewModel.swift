@@ -29,7 +29,6 @@ class WatchWorkoutViewModel: ObservableObject {
     @Published var state: TimerMode?
     @Published var elapsedTime: TimeInterval = 10
     @Published var timerIsNil: Bool = true
-    @Published var didCancelWorkout: Bool = false
     @Published var totalElapsedTime: TimeInterval = 0
     
     @Published var isPreparing = true
@@ -187,7 +186,6 @@ class WatchWorkoutViewModel: ObservableObject {
         totalElapsedTime = elapsedTime
         heartRateMonitor.stopWorkoutSession()
         sessionTimer.stop()
-        didCancelWorkout = true
         isStartingWorkout = false
     }
     

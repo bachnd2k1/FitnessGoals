@@ -151,6 +151,7 @@
 		CAA528BC2DF984BB009C9371 /* XCStrings+Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA651DE02D8808EB00B817E6 /* XCStrings+Generated.swift */; };
 		CAA528BD2DF984C4009C9371 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = CA651DD12D88025000B817E6 /* Localizable.strings */; };
 		CAA528BE2DF984C9009C9371 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 527FEE912D3CA47E00C667CB /* Assets.xcassets */; };
+		CAA5CDE62E0B8466007BF0C9 /* SelectWorkoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA5CDE52E0B8466007BF0C9 /* SelectWorkoutViewModel.swift */; };
 		CADD80792DC46FC00072CDD4 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527FEEBC2D3CB20800C667CB /* LocationManager.swift */; };
 		CADD807A2DC46FC00072CDD4 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AA50762D4349AA00AB4054 /* ThemeManager.swift */; };
 		CADD807B2DC46FC00072CDD4 /* MotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527FEEBE2D3CB76D00C667CB /* MotionManager.swift */; };
@@ -321,6 +322,7 @@
 		CA85B2652DC9F476001DF097 /* HeartRate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRate.swift; sourceTree = "<group>"; };
 		CA85B2E92DD33CA4001DF097 /* WorkoutSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSessionManager.swift; sourceTree = "<group>"; };
 		CAA464CD2DEE87FB00B3D672 /* WorkoutCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutCommand.swift; sourceTree = "<group>"; };
+		CAA5CDE52E0B8466007BF0C9 /* SelectWorkoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectWorkoutViewModel.swift; sourceTree = "<group>"; };
 		CAE145B52D7E80A20017FCE3 /* MapViewSwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewSwiftUI.swift; sourceTree = "<group>"; };
 		CAE145B72D7E81E70017FCE3 /* DataForPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataForPreview.swift; sourceTree = "<group>"; };
 		CAE145FA2D7FC29D0017FCE3 /* FitnessWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FitnessWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -591,6 +593,7 @@
 				52AA50832D478B1F00AB4054 /* RecordWorkoutView.swift */,
 				52AA50852D478B4E00AB4054 /* WorkoutViewModel.swift */,
 				527B035C2D5891C80008FAE1 /* RequestPermissonView.swift */,
+				CAA5CDE52E0B8466007BF0C9 /* SelectWorkoutViewModel.swift */,
 			);
 			path = WorkoutTab;
 			sourceTree = "<group>";
@@ -1055,6 +1058,7 @@
 				527B03192D50AC520008FAE1 /* StatisticViewModel.swift in Sources */,
 				527B03172D5077020008FAE1 /* CalendarManager.swift in Sources */,
 				527B032E2D51C7010008FAE1 /* GoalViewModel.swift in Sources */,
+				CAA5CDE62E0B8466007BF0C9 /* SelectWorkoutViewModel.swift in Sources */,
 				CA1D670A2E014019001F5599 /* Binding+Ext.swift in Sources */,
 				529CC2A72D3F9270004AA2B9 /* StepEntity+CoreDataProperties.swift in Sources */,
 				CA24347C2DF142F800E464AE /* AppEntryView.swift in Sources */,

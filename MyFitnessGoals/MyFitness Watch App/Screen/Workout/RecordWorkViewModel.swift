@@ -39,7 +39,6 @@ class RecordWorkViewModel: ObservableObject {
     @Published var locationAccessNotDetermine: Bool = false
     @Published var locationAccessThrowsError: Bool = false
     @Published var locationAccessError = ""
-    @Published var didCancelWorkout: Bool = false
     @Published var isAllowMotion: Bool = false
     
     @Published var motionAccessIsDenied: Bool = false
@@ -238,7 +237,6 @@ class RecordWorkViewModel: ObservableObject {
         heartRateMonitor.stopWorkoutSession()
         getMetrics()
         sessionTimer.stop()
-        didCancelWorkout = true
         isStartingWorkout = false
     }
     

@@ -22,6 +22,10 @@ class MobileNavigationRouter: ObservableObject {
     @Published var startDate: Date?
     @Published var heartRate: Double?
     
+    // Dùng để mở màn WorkoutDetailView
+    @Published var finishedWorkout: Workout? = nil
+    @Published var isFinishedWorkoutDetail = false
+    
     func openRecordWorkout(type: WorkoutType) {
         currentWorkoutType = type
     }
@@ -59,10 +63,10 @@ class MobileNavigationRouter: ObservableObject {
     }
     
     func endWorkoutThroughWatchCall() {
-        currentWorkoutType = nil
+//        currentWorkoutType = nil
         shouldStartWorkout = false
-        shouldEndWorkout = true
-        currentWorkoutType = nil
+//        shouldEndWorkout = true
+//        currentWorkoutType = nil
         shouldStartImmediately = false
         shouldPauseWorkout = false
         shouldResumeWorkout = false

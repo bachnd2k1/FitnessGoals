@@ -15,15 +15,15 @@ class WorkoutSessionManager: NSObject, ObservableObject {
     private let session: WCSession
     var router: MobileNavigationRouter?
     
-    @Published var isWorkoutActive = false
-    @Published var workoutType: WorkoutType?
-    @Published var startDate: Date?
-    @Published var elapsedTime: TimeInterval = 0
-    @Published var distance: Double = 0
-    @Published var speed: Double = 0
-    @Published var heartRate: Double = 0
-    @Published var steps: Int = 0
-    @Published var calories: Int = 0
+//    @Published var isWorkoutActive = false
+//    @Published var workoutType: WorkoutType?
+////    @Published var startDate: Date?
+//    @Published var elapsedTime: TimeInterval = 0
+//    @Published var distance: Double = 0
+//    @Published var speed: Double = 0
+//    @Published var heartRate: Double = 0
+//    @Published var steps: Int = 0
+//    @Published var calories: Int = 0
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -42,10 +42,9 @@ class WorkoutSessionManager: NSObject, ObservableObject {
         return session.isPaired && session.isWatchAppInstalled
     }
     
-    func startWorkout(type: WorkoutType) {
-        workoutType = type
-        startDate = Date()
-        isWorkoutActive = true
+    func startWorkout(type: WorkoutType, startDate: Date) {
+//        workoutType = type
+//        isWorkoutActive = true
         
         let message: [String: Any] = [
             "command": WorkoutCommand.startWorkout.rawValue,
@@ -57,28 +56,28 @@ class WorkoutSessionManager: NSObject, ObservableObject {
     }
     
     func pauseWorkout() {
-        isWorkoutActive = false
+//        isWorkoutActive = false
         let message: [String: Any] = ["command": WorkoutCommand.pauseWorkout.rawValue]
         sendMessage(message)
     }
     
     func resumeWorkout() {
-        isWorkoutActive = true
+//        isWorkoutActive = true
         let message: [String: Any] = ["command": WorkoutCommand.resumeWorkout.rawValue]
         sendMessage(message)
     }
     
     func endWorkout() {
-        isWorkoutActive = false
+//        isWorkoutActive = false
         let message: [String: Any] = ["command": WorkoutCommand.endWorkout.rawValue]
         sendMessage(message)
     }
     
     func updateMetrics(distance: Double, speed: Double, steps: Int, calories: Int) {
-        self.distance = distance
-        self.speed = speed
-        self.steps = steps
-        self.calories = calories
+//        self.distance = distance
+//        self.speed = speed
+//        self.steps = steps
+//        self.calories = calories
         
         let message: [String: Any] = [
             "command": WorkoutCommand.metrics.rawValue,

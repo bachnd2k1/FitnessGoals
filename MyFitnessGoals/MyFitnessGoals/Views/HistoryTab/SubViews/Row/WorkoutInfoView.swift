@@ -72,7 +72,7 @@ struct WorkoutInfoView: View {
     private func rowView(icon: String, label: String, value: String) -> some View {
         HStack {
             // Icon + Text label
-            HStack(spacing: 5) {
+            HStack(spacing: 20) {
                 Image(systemName: icon)
                     .frame(width: 18)
                     .foregroundStyle(themeManager.isDarkMode ? .orange : .accentColor)

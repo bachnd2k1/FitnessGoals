@@ -98,16 +98,6 @@ final class LocationManager: NSObject, ObservableObject {
         locationManager.stopUpdatingLocation()
         endLocation = locations.last
     }
-    
-    func reset() {
-        locations.removeAll()
-        distances.removeAll()
-        speeds.removeAll()
-        altitudes.removeAll()
-        totalDistance = 0
-        endLocation = nil
-        previousLocation = nil
-    }
 }
 
 extension LocationManager: CLLocationManagerDelegate {

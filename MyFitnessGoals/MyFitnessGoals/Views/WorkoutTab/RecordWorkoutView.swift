@@ -20,137 +20,128 @@ struct RecordWorkoutView: View {
     @State private var isCancelWorkout = false
     
     @State private var countdown = 5
+    @EnvironmentObject var themeManager: ThemeManager
     
     
     init(workoutType: WorkoutType, viewModel: WorkoutViewModel) {
-        //        self._workoutType = workoutType
         self.workoutType = workoutType
         self.viewModel = viewModel
-        //        self.viewModel = WorkoutViewModel(
-        //            dataManager: .shared,
-        //            type: workoutType,
-        //            healthKitManager: .shared
-        //        )
-        //        _viewModel = .init(wrappedValue: WorkoutViewModel(dataManager: .shared, type: workoutType.wrappedValue, healthKitManager: .shared))
-        
-        
-        //        self.viewModel = viewModel
     }
     
     var body: some View {
         NavigationStack {
-            if viewModel.isPreparing {
-                CountdownTimerView(count: viewModel.countdown, totalCount: countdown, showCountdownView: viewModel.showCountdownView)
-            } else {
-                ZStack {
-                    Image(workoutType.background)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .ignoresSafeArea()
-                    
-                    VStack {
-                        if !isFullScreenMap {
-                            Image(workoutType.icon)
-                                .font(.system(size: 60))
-                                .padding(.bottom, 5)
-                                .foregroundStyle(.white)
-                        }
-                        if !viewModel.locationAccessIsDenied && !viewModel.locationAccessThrowsError {
-                            if viewModel.workoutStarted {
-                                Group {
-                                    MapView(mapType: .moving,
-                                            startLocation: viewModel.startLocation,
-                                            route: viewModel.route,
-                                            endLocation: viewModel.endLocation,
-                                            isFullScreen: $isFullScreenMap
-                                    )
+            Group {
+                if viewModel.isPreparing {
+                    CountdownTimerView(count: viewModel.countdown, totalCount: countdown, showCountdownView: viewModel.showCountdownView)
+                } else {
+                    ZStack {
+                        Image(workoutType.background)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .ignoresSafeArea()
+                        
+                        VStack {
+                            if !isFullScreenMap {
+                                Image(workoutType.icon)
+                                    .font(.system(size: 60))
+                                    .padding(.bottom, 5)
+                                    .foregroundStyle(.white)
+                            }
+                            if !viewModel.locationAccessIsDenied && !viewModel.locationAccessThrowsError {
+                                if viewModel.workoutStarted {
+                                    Group {
+                                        MapView(mapType: .moving,
+                                                startLocation: viewModel.startLocation,
+                                                route: viewModel.route,
+                                                endLocation: viewModel.endLocation,
+                                                isFullScreen: $isFullScreenMap
+                                        )
+                                    }
+                                }
+                            }
+                            //                        if viewModel.motionAccessIsDenied {
+                            //                            Spacer()
+                            //                            DeniedPermissionView()
+                            //                        }
+                            Spacer()
+                            if !isFullScreenMap {
+                                TimerView(
+                                    viewModel: viewModel,
+                                    errorLocationIsThrown: $viewModel.locationAccessThrowsError,
+                                    locationAccessIsDenied: $viewModel.locationAccessIsDenied,
+                                    errorMocationIsThrown: $viewModel.motionAccessThrowsError,
+                                    motionAccessIsDenied: $viewModel.motionAccessIsDenied,
+                                    elapsedTime: viewModel.elapsedTime,
+                                    timerIsNil: viewModel.timerIsNil,
+                                    timerIsPaused: viewModel.timerIsPaused
+                                ) {
+                                    if viewModel.hasLocationPermission && viewModel.hasMotionPermission {
+                                        viewModel.startCountdown()
+                                    } else {
+                                        viewModel.requestPermisson()
+                                    }
+                                } pauseAction: {
+                                    viewModel.pauseWorkout()
+                                } resumeAction: {
+                                    timerIsStopped = false
+                                    viewModel.resumeWorkout()
+                                } stopAction: {
+                                    timerIsStopped = true
+                                    viewModel.pauseWorkout()
+                                }
+                                .alert(L10n.warning, isPresented: $timerIsStopped) {
+                                    Button(L10n.yes) {
+                                        viewModel.endWorkout()
+                                        viewModel.addWorkout()
+                                        router.shouldEndWorkout = true
+                                    }
+                                    Button(L10n.no, role: .cancel) {}
+                                } message: {
+                                    Text(L10n.endSessionTitleDialog)
                                 }
                             }
                         }
-//                        if viewModel.motionAccessIsDenied {
-//                            Spacer()
-//                            DeniedPermissionView()
-//                        }
-                        Spacer()
-                        if !isFullScreenMap {
-                            TimerView(
-                                viewModel: viewModel,
-                                errorLocationIsThrown: $viewModel.locationAccessThrowsError,
-                                locationAccessIsDenied: $viewModel.locationAccessIsDenied,
-                                errorMocationIsThrown: $viewModel.motionAccessThrowsError,
-                                motionAccessIsDenied: $viewModel.motionAccessIsDenied,
-                                elapsedTime: viewModel.elapsedTime,
-                                timerIsNil: viewModel.timerIsNil,
-                                timerIsPaused: viewModel.timerIsPaused
-                            ) {
-                                if viewModel.hasLocationPermission && viewModel.hasMotionPermission {
-                                    viewModel.startCountdown()
-                                } else {
-                                    viewModel.requestPermisson()
-                                }
-                            } pauseAction: {
-                                viewModel.pauseWorkout()
-                            } resumeAction: {
-                                viewModel.resumeWorkout()
-                            } stopAction: {
-                                timerIsStopped = true
-                                viewModel.pauseWorkout()
-                            }
-                            .alert(L10n.warning, isPresented: $timerIsStopped) {
-                                Button(L10n.yes) {
-                                    viewModel.endWorkout()
+                    }
+                    .onChange(of: viewModel.locationAccessError) {
+                        showAlert = viewModel.locationAccessThrowsError
+                    }
+                    .alert(L10n.locationError, isPresented: $showAlert) {
+                        Button(L10n.ok, role: .cancel) {}
+                    } message: {
+                        Text(viewModel.locationAccessError)
+                    }
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button {
+                                if !viewModel.isStartingWorkout {
                                     router.currentWorkoutType = nil
-                                    viewModel.addWorkout()
+                                } else {
+                                    isCancelWorkout = true
                                 }
-                                Button(L10n.no, role: .cancel) {}
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.largeTitle)
+                                    .foregroundStyle(.white)
+                            }
+                            .opacity(isFullScreenMap ? 0 : 1)
+                            .alert(L10n.warning, isPresented: $isCancelWorkout) {
+                                Button(L10n.yes) {
+                                    viewModel.cancelWorkout()
+                                    router.cancelWorkoutThroughWatchCall()
+                                }
+                                Button(L10n.no, role: .cancel) {
+                                    isCancelWorkout = false
+                                }
                             } message: {
-                                Text(L10n.endSessionTitleDialog)
+                                Text(L10n.cancelSessionTitleDialog)
                             }
                         }
                     }
+                    .toolbarBackground(.hidden, for: .navigationBar)
                 }
-                .onChange(of: viewModel.locationAccessError) {
-                    showAlert = viewModel.locationAccessThrowsError
-                }
-                .onChange(of: viewModel.didCancelWorkout) {
-                    if viewModel.didCancelWorkout {
-                        router.currentWorkoutType = nil
-                        router.endWorkoutThroughWatchCall()
-                    }
-                }
-                .alert(L10n.locationError, isPresented: $showAlert) {
-                    Button(L10n.ok, role: .cancel) {}
-                } message: {
-                    Text(viewModel.locationAccessError)
-                }
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button {
-                            if !viewModel.isStartingWorkout {
-                                router.currentWorkoutType = nil
-                            } else {
-                                isCancelWorkout = true
-                            }
-                        } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.largeTitle)
-                                .foregroundStyle(.white)
-                        }
-                        .opacity(isFullScreenMap ? 0 : 1)
-                        .alert(L10n.warning, isPresented: $isCancelWorkout) {
-                            Button(L10n.yes) {
-                                viewModel.cancelWorkout()
-                                router.cancelWorkoutThroughWatchCall()
-                            }
-                            Button(L10n.no, role: .cancel) {
-                                isCancelWorkout = false
-                            }
-                        } message: {
-                            Text(L10n.cancelSessionTitleDialog)
-                        }
-                    }
-                }
-                .toolbarBackground(.hidden, for: .navigationBar)
+            }
+            .navigationDestination(item: $router.finishedWorkout) { workout in
+                DetailHistoryView(workout: workout, viewModel: HistoryViewModel(), themeManager: _themeManager)
             }
         }
         .onChange(of: router.shouldPauseWorkout) {
@@ -168,9 +159,9 @@ struct RecordWorkoutView: View {
         .onChange(of: router.shouldEndWorkout) {
             if router.shouldEndWorkout {
                 timerIsStopped = true
-                viewModel.endWorkout()
                 router.endWorkoutThroughWatchCall()
-                viewModel.addWorkout()
+                let workout = viewModel.getWorkoutCoreData() // addWorkout giờ sẽ trả về Workout vừa hoàn thành
+                router.finishedWorkout = workout
                 router.shouldEndWorkout = false // Reset trigger
             }
         }
@@ -183,6 +174,12 @@ struct RecordWorkoutView: View {
                         viewModel.startCountdown(delay: router.delayTime)
                     }
                 }
+            }
+        }
+        .onChange(of: router.finishedWorkout) { _, currentWorkout in
+            if currentWorkout == nil {
+                // Khi user ấn back từ màn Detail
+                router.currentWorkoutType = nil // → đóng RecordWorkoutView
             }
         }
     }

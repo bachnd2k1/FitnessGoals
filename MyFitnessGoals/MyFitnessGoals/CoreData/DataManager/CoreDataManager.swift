@@ -182,6 +182,19 @@ extension CoreDataManager {
             filteredWorkouts = fetchWorkouts(request: request)
         }
     }
+    
+    func getWorkout(by id: UUID) -> WorkoutEntity? {
+        let request = NSFetchRequest<WorkoutEntity>(entityName: "WorkoutEntity")
+        request.predicate = NSPredicate(format: "uuid == %@", id as CVarArg)
+        request.fetchLimit = 1
+
+        do {
+            return try persistenceController.container.viewContext.fetch(request).first
+        } catch {
+            print("Failed to fetch WorkoutEntity by ID: \(error)")
+            return nil
+        }
+    }
 }
 
 extension CoreDataManager {

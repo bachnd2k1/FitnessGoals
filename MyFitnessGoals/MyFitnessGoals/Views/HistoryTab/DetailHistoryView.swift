@@ -11,7 +11,9 @@ struct DetailHistoryView: View {
     let workout: Workout?
     @StateObject var viewModel: HistoryViewModel
     @EnvironmentObject var themeManager: ThemeManager
-
+    @EnvironmentObject var router: MobileNavigationRouter
+    @Environment(\.presentationMode) private var presentationMode
+    
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
@@ -30,7 +32,6 @@ struct DetailHistoryView: View {
                         isFullScreen: .constant(false)
                     )
                     .frame(height: geometry.size.height / 2.5)
-//                    WorkoutMetricsView(workout: workout, allMetrics: true)
                     WorkoutInfoView(workout: workout, isDisplayAll: true, viewModel: viewModel)
                     WorkoutChartView(workout: workout, metric: MetricType.cadence, viewModel: viewModel)
                         .frame(height: geometry.size.height / 3.5)
@@ -39,8 +40,23 @@ struct DetailHistoryView: View {
                         .offset(y: -30)
                 }
                 .padding()
-                .navigationBarTitleDisplayMode(.inline)
             }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("My workout")
+        .navigationBarBackButtonHidden(true)            // 1️⃣ Ẩn default back button + title
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    presentationMode.wrappedValue.dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .imageScale(.large)
+                }
+            }
+        }
+        .onDisappear {
+            router.finishedWorkout = nil
         }
     }
 }

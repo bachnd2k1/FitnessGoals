@@ -35,7 +35,6 @@ final class WorkoutViewModel: ObservableObject {
     @Published var locationAccessError = ""
     @Published var hasLocationPermission: Bool = false
     @Published var hasMotionPermission: Bool = false
-    @Published var didCancelWorkout: Bool = false
     
     @Published var motionAccessIsDenied: Bool = false
     @Published var motionAccessThrowsError: Bool = false
@@ -50,6 +49,7 @@ final class WorkoutViewModel: ObservableObject {
 
 
     private var updateMetricsTimer: DispatchSourceTimer?
+    private var workoutSessionManager: WorkoutSessionManager?
     private var prepareTimer: Timer?
     var timerIsPaused: Bool { state == .paused }
     var workoutType: WorkoutType?
@@ -76,6 +76,7 @@ final class WorkoutViewModel: ObservableObject {
         self.dataManager = dataManager
         self.workoutType = type
         self.healthKitManager = healthKitManager
+        self.workoutSessionManager = workoutSessionManager
         locationManager.$locations.assign(to: &$route)
         locationManager.$endLocation.assign(to: &$endLocation)
         locationManager.$locationAccessIsDenied.assign(to: &$locationAccessIsDenied)
@@ -145,7 +146,7 @@ final class WorkoutViewModel: ObservableObject {
             .sink { [weak self] isStartingWorkout in
                 guard let self = self else { return }
                 if isStartingWorkout {
-                    startDate = startDate ?? Date()
+//                    startDate = startDate ?? Date()
                     workoutStarted = true
                     timer.start()
                     locationManager.startLocationServices()
@@ -192,10 +193,6 @@ final class WorkoutViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
-        
-        motionManager.$motionAccessNotDetermine
-            .receive(on: DispatchQueue.main)
-            .assign(to: &$motionAccessNotDetermine)
         
         locationManager.$locationAccessIsDenied
             .combineLatest(locationManager.$locationAccessThrowsError,
@@ -321,26 +318,30 @@ final class WorkoutViewModel: ObservableObject {
         
     func startCountdown(delay: TimeInterval = 0.0, startDate: Date? = nil) {
         isPreparing = true
-        self.startDate = startDate
-        DispatchQueue.main.asyncAfter(deadline: .now() + delayCounterTimer - delay) {
-            Task { @MainActor in
-                self.locationManager.startLocationServices()
-                self.showCountdownView = true
-                Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-                    Task { @MainActor in
-                        if self.countdown > 0 {
-                            self.countdown -= 1
-                        } else {
-                            self.isPreparing = false
-                            self.showCountdownView = false
-                            self.countdown = 0
-                            timer.invalidate()
-                            self.beginWorkout()
+        let currentDate = Date()
+        self.startDate = currentDate
+//        if let workoutType = workoutType {
+//            workoutSessionManager?.startWorkout(type: workoutType, startDate: currentDate)
+            DispatchQueue.main.asyncAfter(deadline: .now() + delayCounterTimer - delay) {
+                Task { @MainActor in
+                    self.locationManager.startLocationServices()
+                    self.showCountdownView = true
+                    Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+                        Task { @MainActor in
+                            if self.countdown > 0 {
+                                self.countdown -= 1
+                            } else {
+                                self.isPreparing = false
+                                self.showCountdownView = false
+                                self.countdown = 0
+                                timer.invalidate()
+                                self.beginWorkout()
+                            }
                         }
                     }
                 }
             }
-        }
+//        }
     }
 
     
@@ -380,7 +381,6 @@ final class WorkoutViewModel: ObservableObject {
         locationManager.stopLocationServices()
         getMetrics()
         timer.stop()
-        didCancelWorkout = true
         isStartingWorkout = false
         
         #if os(iOS)
@@ -394,7 +394,6 @@ final class WorkoutViewModel: ObservableObject {
         timer.stop()
         isStartingWorkout = false
         
-        resetState()
         
         #if os(iOS)
         manager.endActivity()
@@ -415,9 +414,16 @@ final class WorkoutViewModel: ObservableObject {
             altitudes: locationManager.altitudes,
             steps: steps,
             calories: calories)
+        
         dataManager.add(workout)
         dataManager.addMetrics(to: workout)
-        resetState()
+    }
+    
+    func getWorkoutCoreData() -> Workout? {
+        if let entity = dataManager.getWorkout(by: workoutId) {
+            return dataManager.nSManagedObjectToWorkout(entity)
+        }
+        return nil
     }
     
     private func getMetrics() {
@@ -472,46 +478,5 @@ final class WorkoutViewModel: ObservableObject {
             calories = Calorie(id: workoutId, workoutType: workoutType, date: startDate,
                                                    count: Int(caloriesBurned))
         }
-    }
-    
-    
-    func resetState() {
-        // Core workout state
-        state = nil
-        elapsedTime = 0
-        totalElapsedTime = 0
-        timerIsNil = true
-        workoutStarted = false
-        isStartingWorkout = false
-        isPreparing = false
-        showCountdownView = false
-        countdown = 5
-
-        // Workout metadata
-        startDate = nil
-        workoutId = UUID()
-
-        // Metrics
-        distance = nil
-        speed = nil
-        steps = nil
-        calories = nil
-
-        // Route & location
-        route.removeAll()
-        endLocation = nil
-        
-        locationManager.reset()
-        motionManager.reset()
-
-        // Internal flags
-        didCancelWorkout = false
-        isPaused = false
-
-        // Timers
-        prepareTimer?.invalidate()
-        prepareTimer = nil
-        updateMetricsTimer?.cancel()
-        updateMetricsTimer = nil
     }
 }

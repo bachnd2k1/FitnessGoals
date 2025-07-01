@@ -101,6 +101,25 @@ class WatchSessionManager: NSObject, WCSessionDelegate, ObservableObject {
         guard let command = message["command"] as? String else { return }
         DispatchQueue.main.async {
             switch command {
+            case WorkoutCommand.startWorkout.rawValue:
+                if let typeRaw = message["type"] as? Int16,
+                   let type = WorkoutType(rawValue: typeRaw) {
+                    DispatchQueue.main.async {
+                        var delay: TimeInterval = 0
+                        
+                        if let startDateTimestamp = message["startDate"] as? TimeInterval {
+                            let startDate = Date(timeIntervalSince1970: startDateTimestamp)
+                            router.setStartDate(date: startDate)
+                            let receiveDate = Date()
+                            delay = receiveDate.timeIntervalSince(startDate)
+                        }
+                        router.setDelayTime(time: delay)
+                        router.startWorkoutThroughWatchCall()
+                        router.openRecordWorkout(type: type)
+                        
+                    }
+                }
+                
             case WorkoutCommand.metrics.rawValue:
                 guard let distance = message["distance"] as? Double,
                       let speed = message["speed"] as? Double,
