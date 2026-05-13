@@ -10,21 +10,21 @@ import SwiftUI
 struct TabBarView: View {
     @StateObject var themeManager = ThemeManager()
     @State private var selectedTab = 0
-    var dataManager: CoreDataManager
+    private let appEnvironment: AppEnvironment
 
-    init(dataManager: CoreDataManager) {
-        self.dataManager = dataManager
+    init(appEnvironment: AppEnvironment) {
+        self.appEnvironment = appEnvironment
     }
     
     var body: some View {
         ZStack {
             // Hiển thị màn hình dựa vào tab được chọn
             switch selectedTab {
-            case 0: SelectWorkoutTypeView(dataManager: .shared, healthKitManager: .shared)
-            case 1: HistoryView(dataManager: .shared, selectedTab: $selectedTab)
-            case 2: GeneralStatisticView(dataManager: .shared)
-            case 3: GoalsView(dataManager: .shared, healthKitManager: .shared)
-            default: SelectWorkoutTypeView(dataManager: .shared, healthKitManager: .shared)
+            case 0: SelectWorkoutTypeView(dataManager: appEnvironment.dataManager, healthKitManager: appEnvironment.healthKitManager)
+            case 1: HistoryView(dataManager: appEnvironment.dataManager, selectedTab: $selectedTab)
+            case 2: GeneralStatisticView(dataManager: appEnvironment.dataManager)
+            case 3: GoalsView(healthKitManager: appEnvironment.healthKitManager, calendarManager: appEnvironment.calendarManager)
+            default: SelectWorkoutTypeView(dataManager: appEnvironment.dataManager, healthKitManager: appEnvironment.healthKitManager)
             }
             VStack {
                 Spacer()
@@ -39,7 +39,7 @@ struct TabBarView: View {
 
 struct TabBarView_Previews: PreviewProvider {
     static var previews: some View {
-        TabBarView(dataManager: .preview)
+        TabBarView(appEnvironment: AppEnvironment(dataManager: .preview))
             .environmentObject(MobileNavigationRouter())
     }
 }

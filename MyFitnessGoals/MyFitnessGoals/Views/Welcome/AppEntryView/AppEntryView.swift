@@ -12,7 +12,7 @@ struct AppEntryView: View {
     @AppStorage("onboardingStarted") var onboardingStarted: Bool = false
     @AppStorage("onboardingCompleted") var onboardingCompleted: Bool = false
 
-    private let dataManager: CoreDataManager = .shared
+    @StateObject private var appEnvironment = AppEnvironment()
     @StateObject private var themeManager = ThemeManager()
     @StateObject var router = MobileNavigationRouter()
 
@@ -24,10 +24,9 @@ struct AppEntryView: View {
                 ZStack {
                     if hasFinishedSetup {
                         NavigationStack {
-                            TabBarView(dataManager: dataManager)
+                            TabBarView(appEnvironment: appEnvironment)
                                 .onAppear {
-                                    let workoutSessionManager = WorkoutSessionManager.shared
-                                    workoutSessionManager.configure(router: router)
+                                    appEnvironment.workoutSessionManager.configure(router: router)
                                 }
                         }
                     } else {

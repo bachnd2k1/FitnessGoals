@@ -53,7 +53,12 @@ struct StatView: View {
 
 struct StatView_Previews: PreviewProvider {
     static var previews: some View {
-        StatView(icon: "mappin.and.ellipse", unit: "km", color: .brown, isSelected: true, viewModel: GoalViewModel(dataManager: .shared, healthKitManager: .shared)) {
+        StatView(
+            icon: "mappin.and.ellipse",
+            unit: "km", color: .brown,
+            isSelected: true,
+            viewModel: GoalViewModel(healthDataProvider: HealthKitManager.shared)
+        ) {
             
         }
     }

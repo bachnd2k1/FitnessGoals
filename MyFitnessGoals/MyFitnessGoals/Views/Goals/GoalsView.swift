@@ -13,13 +13,18 @@ struct GoalsView: View {
     @State private var selectedIndex = 6
     @State private var selectedDate = Date()
     @Environment(\.scenePhase) private var scenePhase
-    @ObservedObject var viewModel: GoalViewModel
+    @StateObject private var viewModel: GoalViewModel
     
     private let dateRange: [Date]
 
     
-    init(dataManager: CoreDataManager, healthKitManager: HealthKitManager) {
-        self._viewModel = .init(wrappedValue: GoalViewModel(dataManager: dataManager, healthKitManager: healthKitManager))
+    init(healthKitManager: HealthKitManager, calendarManager: CalendarManager = CalendarManager()) {
+        self._viewModel = .init(
+            wrappedValue: GoalViewModel(
+                healthDataProvider: healthKitManager,
+                calendarManager: calendarManager
+            )
+        )
         let today = Date()
         let calendar = Calendar.current
         self.dateRange = (0..<7).map { calendar.date(byAdding: .day, value: $0 - 6, to: today)! }
@@ -166,7 +171,7 @@ struct StatSelectionView: View {
         .frame(maxWidth: .infinity)
         .padding(.horizontal, 10)
         .onAppear {
-            viewModel.selectTargetGoal(infoType: .distance)
+            viewModel.updateSelectType(infoType: .distance)
         }
     }
 }
@@ -249,6 +254,6 @@ struct ShareSheet: UIViewControllerRepresentable {
 
 struct GoalsView_Previews: PreviewProvider {
     static var previews: some View {
-        GoalsView(dataManager: .shared, healthKitManager: .shared)
+        GoalsView(healthKitManager: .shared)
     }
 }

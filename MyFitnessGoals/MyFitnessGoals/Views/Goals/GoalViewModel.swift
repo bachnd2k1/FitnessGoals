@@ -8,15 +8,41 @@
 import Foundation
 import Combine
 
+protocol GoalHealthDataProviding {
+    var isAuthorizedPublisher: Published<Bool>.Publisher { get }
+    var distancePublisher: AnyPublisher<[String], Never> { get }
+    var stepPublisher: AnyPublisher<[String], Never> { get }
+    var caloriesPublisher: AnyPublisher<[String], Never> { get }
+    func requestAuthorization()
+    func updateAuthorizationStatus()
+    func fetchHealthDataForLast7Days(date: Date)
+}
+
+protocol GoalSettingsProviding {
+    func goalValue(for measure: MeasureUnit) -> Double
+}
+
+struct UserDefaultsGoalSettingsProvider: GoalSettingsProviding {
+    func goalValue(for measure: MeasureUnit) -> Double {
+        switch measure {
+        case .distance:
+            return UserDefaults.standard.double(forKey: UserDefaults.Keys.distance.rawValue)
+        case .calorie:
+            return Double(UserDefaults.standard.integer(forKey: UserDefaults.Keys.calories.rawValue))
+        case .step:
+            return Double(UserDefaults.standard.integer(forKey: UserDefaults.Keys.steps.rawValue))
+        default:
+            return 0
+        }
+    }
+}
+
 @MainActor
 final class GoalViewModel: ObservableObject {
-    private let calendarManager = CalendarManager()
-    private let dataManager: CoreDataManager
-    private let healthKitManager: HealthKitManager
-    var distances: [Distance] = []
-    var calories: [Calorie] = []
-    var steps: [Step] = []
-    var targetGoals: [TargetGoal] = []
+    private let calendarManager: CalendarManager
+    private let healthDataProvider: GoalHealthDataProviding
+    private let settingsProvider: GoalSettingsProviding
+    private var targetGoals: [TargetGoal] = []
     
     @Published var targetGoal: TargetGoal?
     @Published var selectedDate = Date()
@@ -25,23 +51,12 @@ final class GoalViewModel: ObservableObject {
     @Published var chartKitData: [ChartDataKit] = []
     let maxItem = 7
     
-    @Published var distancesKit: [String]
-    @Published var stepsKit: [String]
-    @Published var caloriesKit: [String]
+    @Published private var distancesKit: [String]
+    @Published private var stepsKit: [String]
+    @Published private var caloriesKit: [String]
     
     @Published var selectedGoalIndex: Int = 0
     @Published var percentageValue = "0"
-    
-    
-    var data = [
-        ChartDataKit(day: "Sat", value: "4935"),
-        ChartDataKit(day: "Sun", value: "3959"),
-        ChartDataKit(day: "Mon", value: "7815"),
-        ChartDataKit(day: "Tue", value: "5483"),
-        ChartDataKit(day: "Wed", value: "7213"),
-        ChartDataKit(day: "Thu", value: "5066"),
-        ChartDataKit(day: "Fri", value: "748")
-    ]
     
     var distancesChartData = [ChartDataKit]()
     var stepsKitChartData  = [ChartDataKit]()
@@ -53,81 +68,51 @@ final class GoalViewModel: ObservableObject {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    init(dataManager: CoreDataManager, healthKitManager: HealthKitManager) {
-        self.dataManager = dataManager
-        self.healthKitManager = healthKitManager
+    init(
+        healthDataProvider: GoalHealthDataProviding,
+        settingsProvider: GoalSettingsProviding = UserDefaultsGoalSettingsProvider(),
+        calendarManager: CalendarManager = CalendarManager()
+    ) {
+        self.healthDataProvider = healthDataProvider
+        self.settingsProvider = settingsProvider
+        self.calendarManager = calendarManager
         distancesKit = Array(repeating: "0", count: maxItem)
         stepsKit = Array(repeating: "0", count: maxItem)
         caloriesKit = Array(repeating: "0", count: maxItem)
         
         calendarManager.$selectedDate.assign(to: &$selectedDate)
         fetchInfo(date: Date())
-        summerizeData()
+        summarizeData()
         
-        dataManager.$distances
-            .sink { [weak self] in
-                self?.distances = $0.compactMap { dataManager.mapToBaseFitness($0) as? Distance }
-            }
-            .store(in: &cancellables)
-        
-        dataManager.$calories
-            .sink { [weak self] in
-                self?.calories = $0.compactMap { dataManager.mapToBaseFitness($0) as? Calorie }
-            }
-            .store(in: &cancellables)
-        
-        dataManager.$steps
-            .sink { [weak self] in
-                self?.steps = $0.compactMap{ dataManager.mapToBaseFitness($0) as? Step }
-            }
-            .store(in: &cancellables)
-        
-        healthKitManager.$isAuthorized
+        healthDataProvider.isAuthorizedPublisher
             .receive(on: DispatchQueue.main)
             .assign(to: &$isAuthorized)
         
-        healthKitManager.distanceSubject
+        Publishers.CombineLatest3(
+            healthDataProvider.distancePublisher,
+            healthDataProvider.stepPublisher,
+            healthDataProvider.caloriesPublisher
+        )
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] distances in
+            .sink { [weak self] distances, steps, calories in
                 guard let self = self else { return }
                 self.distancesKit = distances
-                self.distancesChartData = generateChartData(from: distances)
-            }
-            .store(in: &cancellables)
-        
-        healthKitManager.stepSubject
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] steps in
-                guard let self = self else { return }
                 self.stepsKit = steps
-                self.stepsKitChartData = generateChartData(from: steps)
-            }
-            .store(in: &cancellables)
-        
-        healthKitManager.caloriesSubject
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] calories in
-                guard let self = self else { return }
                 self.caloriesKit = calories
+                self.distancesChartData = generateChartData(from: distances)
+                self.stepsKitChartData = generateChartData(from: steps)
                 self.caloriesKitChartData = generateChartData(from: calories)
-            }
-            .store(in: &cancellables)
-        
-        // Update chart when infoType changes
-        $infoType
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] newValue in
-                guard let self = self else { return }
-                self.selectTargetGoal(infoType: newValue)
                 self.updateChartData()
             }
             .store(in: &cancellables)
         
-        $targetGoal
+        Publishers.CombineLatest($infoType, $selectedGoalIndex)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] newValue in
+            .sink { [weak self] infoType, selectedIndex in
                 guard let self = self else { return }
-                self.percentageValue = calculatePercentage()
+                self.targetGoal = self.targetGoal(for: infoType)
+                self.chartKitData = self.getData(infoType: infoType)
+                self.percentageValue = self.calculatePercentage(for: infoType, selectedIndex: selectedIndex)
             }
             .store(in: &cancellables)
     }
@@ -136,52 +121,19 @@ final class GoalViewModel: ObservableObject {
         chartKitData = getData(infoType: infoType)
     }
     
-    private func generateDefaultChartData() -> [ChartDataKit] {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "EEE" // "Sat", "Sun", etc.
-        
-        let today = Date()
-        var chartData: [ChartDataKit] = []
-        
-        for i in 0..<7 {
-            let pastDate = Calendar.current.date(byAdding: .day, value: -i, to: today) ?? today
-            let dayString = dateFormatter.string(from: pastDate)
-            chartData.append(ChartDataKit(day: dayString, value: "0"))
-        }
-        return chartData
-    }
-    
     func requestHealthKitPermssion() {
-        healthKitManager.requestAuthorization()
+        healthDataProvider.requestAuthorization()
     }
     
     func checkAuthorizationStatus() {
-        healthKitManager.updateAuthorizationStatus()
+        healthDataProvider.updateAuthorizationStatus()
     }
     
     func fetchInfo(date: Date) {
-        healthKitManager.fetchHealthDataForLast7Days(date: date)
+        healthDataProvider.fetchHealthDataForLast7Days(date: date)
     }
     
-    func summerizeData() {
-        let filteredDistances = distances.filter { isSameDate(date1: $0.date!, date2: selectedDate) }
-        let filteredCalories = calories.filter { isSameDate(date1: $0.date!, date2: selectedDate) }
-        let filteredSteps = steps.filter { isSameDate(date1: $0.date!, date2: selectedDate) }
-        
-        
-        let totalDistance = filteredDistances.reduce(0) { $0 + $1.value }
-        let totalCalories = filteredCalories.reduce(0) { $0 + $1.value }
-        let totalSteps = filteredSteps.reduce(0) { $0 + $1.value }
-        
-        let formatter: NumberFormatter = {
-            let formatter = NumberFormatter()
-            formatter.numberStyle = .decimal
-            formatter.maximumFractionDigits = 1
-            formatter.minimumFractionDigits = 1
-            formatter.locale = Locale(identifier: "en_US")
-            return formatter
-        }()
-        
+    func summarizeData() {
         targetGoals = [
             TargetGoal(
                 measureType: MeasureUnit.distance.name,
@@ -189,7 +141,7 @@ final class GoalViewModel: ObservableObject {
                 unitOfMeasure: MeasureUnit.distance.unitOfMeasure,
                 icon: "location",
                 color: .brown,
-                measureValue: formatter.string(for: totalDistance)
+                infoType: .distance
             ),
             TargetGoal(
                 measureType: MeasureUnit.step.name,
@@ -197,7 +149,7 @@ final class GoalViewModel: ObservableObject {
                 unitOfMeasure: MeasureUnit.step.unitOfMeasure,
                 icon: "figure.walk",
                 color: .brown,
-                measureValue: formatter.string(for: totalSteps)
+                infoType: .step
             ),
             TargetGoal(
                 measureType: MeasureUnit.calorie.name,
@@ -205,7 +157,7 @@ final class GoalViewModel: ObservableObject {
                 unitOfMeasure: MeasureUnit.calorie.unitOfMeasure,
                 icon: "flame",
                 color: .brown,
-                measureValue: formatter.string(for: totalCalories)
+                infoType: .calories
             )
         ]
     }
@@ -219,21 +171,10 @@ final class GoalViewModel: ObservableObject {
         self.infoType = infoType
     }
     
-    func selectTargetGoal(infoType: InfoType) {
-        switch infoType {
+    public func calculatePercentage(for type: InfoType, selectedIndex: Int) -> String {
+        switch type {
         case .distance:
-            targetGoal = targetGoals[0]
-        case .step:
-            targetGoal = targetGoals[1]
-        case .calories:
-            targetGoal = targetGoals[2]
-        }
-    }
-    
-    public func calculatePercentage() -> String {
-        switch infoType {
-        case .distance:
-            let value = distancesKit[maxItem - selectedGoalIndex - 1]
+            let value = value(for: distancesKit, at: selectedIndex)
             let targetValue = targetGoal?.targetValue
             guard let targetStr = targetValue,
                   let value = Double(value),
@@ -247,7 +188,7 @@ final class GoalViewModel: ObservableObject {
             String(format: "%.0f%%", percentage) :
             String(format: "%.1f%%", percentage)
         case .step:
-            let value = stepsKit[maxItem - selectedGoalIndex - 1]
+            let value = value(for: stepsKit, at: selectedIndex)
             let targetValue = targetGoal?.targetValue
             guard let targetStr = targetValue,
                   let value = Double(value), let targetValue = Double(targetStr), targetValue > 0 else {
@@ -258,7 +199,7 @@ final class GoalViewModel: ObservableObject {
             String(format: "%.0f%%", percentage) :
             String(format: "%.2f%%", percentage)
         case .calories:
-            let value = caloriesKit[maxItem - selectedGoalIndex - 1]
+            let value = value(for: caloriesKit, at: selectedIndex)
             let targetValue = targetGoal?.targetValue
             guard let targetStr = targetValue,
                   let value = Double(value), let targetValue = Double(targetStr), targetValue > 0 else {
@@ -274,11 +215,11 @@ final class GoalViewModel: ObservableObject {
     func getSelectedHealthKitValue(indexPageDay: Int) -> String {
         switch infoType {
         case .distance:
-            return distancesKit[maxItem - indexPageDay - 1]
+            return value(for: distancesKit, at: indexPageDay)
         case .step:
-            return stepsKit[maxItem - indexPageDay - 1]
+            return value(for: stepsKit, at: indexPageDay)
         case .calories:
-            return caloriesKit[maxItem - indexPageDay - 1]
+            return value(for: caloriesKit, at: indexPageDay)
         }
     }
     
@@ -312,12 +253,7 @@ final class GoalViewModel: ObservableObject {
     }
     
     private func getGoal(for measure: MeasureUnit) -> Double {
-        switch measure {
-        case .distance: return UserDefaults.standard.double(forKey: UserDefaults.Keys.distance.rawValue)
-        case .calorie: return Double(UserDefaults.standard.integer(forKey: UserDefaults.Keys.calories.rawValue))
-        case .step: return Double(UserDefaults.standard.integer(forKey: UserDefaults.Keys.steps.rawValue))
-        default: return 0
-        }
+        settingsProvider.goalValue(for: measure)
     }
     
     private func getFormattedGoal(for measure: MeasureUnit) -> String {
@@ -341,8 +277,27 @@ final class GoalViewModel: ObservableObject {
         return "\(goal)"
     }
     
-    private func isSameDate(date1: Date, date2: Date) -> Bool {
-        Calendar.current.isDate(date1, inSameDayAs: date2)
+    private func targetGoal(for infoType: InfoType) -> TargetGoal? {
+        targetGoals.first { $0.infoType == infoType }
     }
     
+    private func value(for data: [String], at selectedIndex: Int) -> String {
+        guard selectedIndex >= 0, selectedIndex < maxItem else {
+            return "0"
+        }
+
+        let index = maxItem - selectedIndex - 1
+        guard index >= 0, index < data.count else {
+            return "0"
+        }
+
+        return data[index]
+    }
+}
+
+extension HealthKitManager: GoalHealthDataProviding {
+    var isAuthorizedPublisher: Published<Bool>.Publisher { $isAuthorized }
+    var distancePublisher: AnyPublisher<[String], Never> { distanceSubject.eraseToAnyPublisher() }
+    var stepPublisher: AnyPublisher<[String], Never> { stepSubject.eraseToAnyPublisher() }
+    var caloriesPublisher: AnyPublisher<[String], Never> { caloriesSubject.eraseToAnyPublisher() }
 }
